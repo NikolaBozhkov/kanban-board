@@ -11,6 +11,6 @@
     "experimentalDecorators": true,
     "strict": true,
     "strictNullChecks": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
   }
 }
