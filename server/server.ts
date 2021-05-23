@@ -3,9 +3,11 @@ import path from 'path';
 import { Server } from '@overnightjs/core';
 import { UserController } from './UserController';
 import { CardController } from './CardController';
+import { ListController } from './ListController';
 
 const userController = new UserController();
 const cardController = new CardController();
+const listController = new ListController();
 
 let server = new Server();
 
@@ -14,11 +16,7 @@ server.app.use(express.static(path.join(__dirname, 'static')));
 server.app.use(express.json());
 server.app.use(express.urlencoded({ extended: false }));
 
-server.addControllers([userController, cardController]);
-
-server.app.get('/hello', (req, res) => {
-  res.send('Helloo00oy');
-});
+server.addControllers([userController, cardController, listController]);
 
 server.app.all('*', (req, res) => {
   console.log(`[TRACE] Server 404 request: ${req.originalUrl}`);
