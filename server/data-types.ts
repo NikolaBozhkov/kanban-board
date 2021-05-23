@@ -1,22 +1,22 @@
-export interface Card {
+export interface ICard {
   title: string;
   description: string;
-  history: Action[];
+  history: IAction[];
   id: string;
   listId: string;
 }
 
-export interface List {
+export interface IList {
   title: string;
   id: string;
 }
 
-export interface Action {
-  user: User;
+export interface IAction {
+  userId: string;
   description: string;
 }
 
-export interface User {
+export interface IUser {
   firstName: string;
   lastName: string;
   id: string;
