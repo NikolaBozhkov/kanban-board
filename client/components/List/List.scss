@@ -1,0 +1,14 @@
+@import '../../styles/variables.scss';
+
+.list {
+  min-width: 25rem;
+  background-color: #444;
+  margin: 0 $listSpacing;
+  border-radius: 0.25rem;
+}
+
+.title {
+  display: inline-block;
+  padding: 1rem 1.5rem;
+  font-size: 1.7rem;
+}

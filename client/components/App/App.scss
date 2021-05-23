@@ -1,0 +1,7 @@
+@import '../../styles/variables.scss';
+
+.lists {
+   display: flex;
+   padding: 0 $listSpacing;
+   padding-top: 2rem;
+}
