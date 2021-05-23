@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 import { Server } from '@overnightjs/core';
 import { UserController } from './UserController';
 import { CardController } from './CardController';
@@ -15,6 +16,8 @@ server.app.use(express.static(path.join(__dirname, 'static')));
 
 server.app.use(express.json());
 server.app.use(express.urlencoded({ extended: false }));
+
+server.app.use(cors());
 
 server.addControllers([userController, cardController, listController]);
 
