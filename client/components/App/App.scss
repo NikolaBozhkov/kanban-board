@@ -1,7 +1,32 @@
 @import '../../styles/variables.scss';
 
 .lists {
-   display: flex;
-   padding: 0 $listSpacing;
-   padding-top: 2rem;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2rem;
+
+  & > * {
+   margin: 0 $listSpacing;
+  }
+
+  .add-list {
+    display: flex;
+    flex-direction: column;
+    min-height: $list-header-min-height;
+
+    .icon {
+      flex-grow: 1;
+      width: 5rem;
+
+      i {
+        --ggs: 1.2;
+        margin-top: 0.1rem;
+      }
+    }
+  }
+}
+
+.list-underline {
+  background-color: #A7A2A9;
+  height: 0.5rem;
 }

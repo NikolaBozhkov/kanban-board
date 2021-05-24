@@ -19,6 +19,12 @@ export default function App(): JSX.Element {
   const listComponents = lists.map((list) => <List {...list} key={list.id} />);
 
   return (
-    <div className="lists">{listComponents}</div>
+    <div className="lists">
+      {listComponents}
+      <div className="add-list">
+        <span className="icon"><i className="gg-math-plus" /></span>
+        <div className="list-underline" />
+      </div>
+    </div>
   );
 } 
