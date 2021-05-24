@@ -13,4 +13,4 @@ const defaultLists: IList[] = defaultListTitles.map((title) => {
   };
 });
 
-defaultLists.forEach((list) => listsMap.set(list.id, list));
+// defaultLists.forEach((list) => listsMap.set(list.id, list));

@@ -11,14 +11,26 @@ html {
 
 body {
   background-color: $bg-color;
-  color: $text-color;
-  font-size: 1.6rem;
-  font-family: $font-family;
-  font-weight: 400;
+
+  &, input {
+    color: $text-color;
+    font-size: 1.6rem;
+    font-family: $font-family;
+    font-weight: 400;
+  }
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color $base-transition-t;
+
+  &:hover {
+    cursor: pointer;
+
+    i {
+      color: $highlight-color;
+    }
+  }
 }

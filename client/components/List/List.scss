@@ -1,8 +1,7 @@
 @import '../../styles/variables.scss';
 
 .list {
-  width: 25rem;
-  border-radius: 0.25rem;
+  width: $list-width;
 
   .header {
     min-height: $list-header-min-height;
@@ -13,17 +12,53 @@
       flex-grow: 1;
       display: flex;
       align-items: center;
+      position: relative;
     
       .title {
         flex-grow: 1;
         display: inline-block;
         padding: 1rem 0;
-        font-size: 1.7rem;
+        font-size: $list-title-font-size;
       }
     
-      .options-btn {
+      .actions-icon {
         padding: 0 1.1rem;
+        align-self: stretch;
       }
+    }
+  }
+
+  .actions {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #555;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    display: none;
+
+    .action {
+      display: flex;
+      transition: color $base-transition-t;
+      
+      &:not(:last-child) {
+        margin-bottom: 1.3rem;
+      }
+
+      .icon {
+        margin-right: 1rem;
+        margin-bottom: 0.3rem;
+        transition: none;
+      }
+
+      &:hover {
+        color: $highlight-color;
+        cursor: pointer;
+      }
+    }
+
+    &.actions-open {
+      display: block;
     }
   }
 }
