@@ -1,12 +1,23 @@
-import React, { useEffect, useState, useRef, Fragment } from 'react';
+import React, { useEffect, useState, useRef, useMemo, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import classnames from 'classnames';
+
 import { IList } from '../../../shared/data-types';
-import List from '../List';
+import { HttpClient } from '../../http/HttpClient';
+import { ListService } from '../List/ListService';
+import { List } from '../List';
 import Icon from '../Icon';
+
 import './App.scss';
 
 export default function App(): JSX.Element {
+  const httpClient = useMemo(() => new HttpClient(), []);
+  const listService = useMemo(() => new ListService(httpClient), [httpClient]);
+
+  const [lists, setLists] = useState<IList[]>([]);
+  const [isAddingList, setIsAddingList] = useState(false);
+  const addListInput = useRef<HTMLInputElement>(null!);
+
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {
       addList();
@@ -21,57 +32,37 @@ export default function App(): JSX.Element {
       return;
     }
 
-    const res = await fetch('http://localhost:3000/api/lists', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ title })
-    });
-
-    const json = await res.json();
-    const errorJson = json as { error: string };
-    const newList = json as IList;
-    
-    if (!res.ok && errorJson) {
-      console.log('Error: ' + errorJson.error);
-    } else if (res.ok && newList) {
+    try {
+      const newList = await listService.add(title);
       setLists([...lists, newList]);
       setIsAddingList(false);
       addListInput.current.value = "";
+    } catch (error) {
+      console.log(error);
     }
   }
 
   async function removeList(listId: string) {
-    const res = await fetch('http://localhost:3000/api/lists', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id: listId })
-    });
-
-    if (res.ok) {
+    try {
+      await listService.delete(listId);
       setLists(lists.filter((list) => list.id != listId));
-    } else {
-      const errorJson = await res.json() as { error: string };
-      console.log('Error: ' + errorJson.error);
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  const [lists, setLists] = useState<IList[]>([]);
-  const [isAddingList, setIsAddingList] = useState(false);
-  const addListInput = useRef<HTMLInputElement>(null!);
-
   useEffect(() => {
     const fetchLists = async () => {
-      const res = await fetch('http://localhost:3000/api/lists');
-      const newLists = await res.json() as IList[];
-      setLists(newLists);
+      try {
+        const lists = await listService.getAll();
+        setLists(lists);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     fetchLists();
-  }, []);
+  }, [listService]);
 
   useEffect(() => {
     if (isAddingList) {

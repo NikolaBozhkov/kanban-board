@@ -37,7 +37,7 @@ export class ListController {
       return res.status(StatusCodes.NOT_FOUND).json({ error: `Cannot find list with the given id: ${id}` })
     }
 
-    res.sendStatus(StatusCodes.OK);
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
 
   @Get()
