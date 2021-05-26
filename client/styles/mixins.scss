@@ -1,0 +1,10 @@
+@import './variables.scss';
+
+@mixin reset-input {
+  border: none;
+  background-color: transparent;
+
+  &:focus {
+    outline: none;
+  }
+}

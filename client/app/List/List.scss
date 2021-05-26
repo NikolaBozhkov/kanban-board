@@ -1,4 +1,5 @@
 @import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
 
 .list {
   width: $list-width;
@@ -21,9 +22,20 @@
         font-size: $list-title-font-size;
       }
     
-      .actions-icon {
-        padding: 0 1.1rem;
+      & > .icon {
+        width: 3rem;
         align-self: stretch;
+
+        &:last-of-type {
+          margin-left: 0.2rem;
+          width: 2rem;
+          justify-content: flex-end;
+
+          i {
+            position: relative;
+            left: -25%;
+          }
+        }
       }
     }
   }
@@ -59,6 +71,18 @@
 
     &.actions-open {
       display: block;
+    }
+  }
+
+  .add-card {
+    display: none;
+
+    &.adding-card {
+      display: block;
+    }
+
+    input {
+      @include reset-input;
     }
   }
 }

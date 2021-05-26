@@ -11,6 +11,10 @@ export interface IList {
   id: string;
 }
 
+export interface IPopulatedList extends IList {
+  cards: ICard[];
+}
+
 export interface IAction {
   userId: string;
   description: string;

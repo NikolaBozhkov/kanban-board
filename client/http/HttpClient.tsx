@@ -3,8 +3,8 @@ type ResponseError = {
 };
 
 export class HttpClient {
-  async get<T>(apiUrl: string, body?: unknown): Promise<T> {
-    return this.genericRequest<T>(apiUrl, 'GET', body);
+  async get<T>(apiUrl: string): Promise<T> {
+    return this.genericRequest<T>(apiUrl, 'GET');
   }
 
   async post<T>(apiUrl: string, body: unknown): Promise<T> {
@@ -36,13 +36,19 @@ export class HttpClient {
   }
 
   private async request<T>(okHandler: (res: Response) => Promise<T>, apiUrl: string, method: string, body?: unknown): Promise<T> {
-    const res = await fetch('http://localhost:3000/api/' + apiUrl, {
-      method,
-      headers: {
+    const options: RequestInit = {
+      method
+    };
+
+    if (body) {
+      options.headers = {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body || {})
-    });
+      };
+
+      options.body = JSON.stringify(body);
+    }
+
+    const res = await fetch('http://localhost:3000/api/' + apiUrl, options);
 
     if (res.ok) {
       return okHandler(res);
