@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 import { DepsContext } from '../App';
 import { List } from '../List';
-import Icon from '../Icon';
+import { Icon } from '../Icon';
 
 export function Board(): JSX.Element {
   const { listService, boardStore } = useContext(DepsContext);

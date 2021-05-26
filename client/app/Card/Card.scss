@@ -1,8 +1,71 @@
 @import '../../styles/variables.scss';
 
 .card {
+  $min-height: 4.4rem;
+  $border-r: $list-border-r * 0.62;
+  $padding-r: 0.2rem;
+
+  display: flex;
+  align-items: center;
   background-color: $card-bg;
-  border-radius: $list-border-r * 0.62;
-  padding: 1rem 1.5rem;
+  border-radius: $border-r;
+  padding-left: 1.5rem;
   margin-top: 2rem;
+  min-height: $min-height;
+  transition: background-color 0.1s;
+  overflow: hidden;
+  position: relative;
+
+  .title {
+    flex-grow: 1;
+    padding: 1rem 0;
+  }
+
+  .options {
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    position: relative;
+
+    $icon-top: ($min-height - $icon-btn-width) * 0.5;
+    .icon {
+      width: $icon-btn-width;
+      height: $icon-btn-width;
+      position: relative;
+      right: -$icon-btn-width;
+      top: $icon-top;
+      color: rgba($text-color, 0.35);
+      transition: color $transition-fast, transform $transition-base cubic-bezier(0.4, 1.57, 0.24, 1.03);
+    }
+  
+    .options-highlight {
+      $width: 0.3rem;
+      width: $width;
+      height: $icon-top * 2 + $icon-btn-width;
+      background-color: $highlight-color;
+      border-bottom-left-radius: $width;
+      border-top-left-radius: $width;
+      position: absolute;
+      right: 0;
+      opacity: 0;
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: lighten($card-bg, 3%);
+
+    .icon {
+      transform: translateX(-$icon-btn-width);
+
+      &:hover {
+        color: $highlight-color;
+        transition: color $transition-fast, transform $transition-base ease-in;
+
+        & + .options-highlight {
+          opacity: 1;
+        }
+      }
+    }
+  }
 }

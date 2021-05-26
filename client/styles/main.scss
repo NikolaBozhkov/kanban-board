@@ -24,13 +24,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color $base-transition-t;
+  transition: color $transition-base;
 
   &:hover {
     cursor: pointer;
-
-    i {
-      color: $highlight-color;
-    }
+    color: $highlight-color;
   }
 }

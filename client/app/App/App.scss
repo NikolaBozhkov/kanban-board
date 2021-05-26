@@ -2,7 +2,6 @@
 @import '../../styles/mixins.scss';
 
 $add-icon-width: 5rem;
-$edit-icon-width: 3rem;
 $divider-width: 1px;
 
 .lists {
@@ -29,7 +28,7 @@ $divider-width: 1px;
         visibility: hidden;
         width: 0;
         font-size: $list-title-font-size;
-        transition: width $base-transition-t ease-out;
+        transition: width $transition-base ease-out;
         margin: 0.7rem 0;
       }
 
@@ -40,8 +39,8 @@ $divider-width: 1px;
       .icon {
         i {
           margin-top: 0.15rem;
-          transition: transform $base-transition-t * 1.5 cubic-bezier(.31,2.06,.36,1.03);
-          transition: color $base-transition-t;
+          transition: transform $transition-base * 1.5 cubic-bezier(.31,2.06,.36,1.03);
+          transition: color $transition-base;
 
           &.gg-math-plus {
             color: $text-color;
@@ -64,7 +63,7 @@ $divider-width: 1px;
       $cancel-icon-width-w: 0.95;
 
       .icon {
-        width: $edit-icon-width;
+        width: $icon-btn-width;
 
         &:hover {
           i.gg-check {
@@ -79,7 +78,7 @@ $divider-width: 1px;
 
       .header .add-toggle-icon {
         justify-content: flex-end;
-        width: $edit-icon-width * $cancel-icon-width-w;
+        width: $icon-btn-width * $cancel-icon-width-w;
         
         i {
           transform: rotate(45deg);
@@ -95,7 +94,7 @@ $divider-width: 1px;
       
       .header > input {
         visibility: visible;
-        width: $list-width - $edit-icon-width * (1.0 + $cancel-icon-width-w);
+        width: $list-width - $icon-btn-width * (1.0 + $cancel-icon-width-w);
       }
     }
   }

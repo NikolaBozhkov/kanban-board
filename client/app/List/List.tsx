@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
-import Icon from '../Icon';
+import { Icon } from '../Icon';
 import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';

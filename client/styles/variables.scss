@@ -7,6 +7,8 @@ $list-spacing: 2rem;
 $list-width: 28rem;
 $list-border-r: 0.7rem;
 
+$icon-btn-width: 3rem;
+
 $bg-color: #1B2022;
 $text-color: #F4F7F5;
 $highlight-color: #FF8811;
@@ -15,9 +17,10 @@ $yes-color: #53DD6C;
 $yes-inactive-color: lighten($yes-color, 20%);
 $no-color: #F02D3A;
 $no-inactive-color: lighten($no-color, 20%);
-$card-bg: #4D565B;
+$card-bg: #525B60;
 
-$base-transition-t: 0.25s;
+$transition-base: 0.25s;
+$transition-fast: 0.1s;
 
 $list-header-min-height: 5rem;
 $list-title-font-size: 1.85rem;

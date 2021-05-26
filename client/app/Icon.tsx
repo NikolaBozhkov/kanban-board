@@ -6,6 +6,6 @@ type IconProps = {
   onClick?: React.MouseEventHandler<HTMLSpanElement>;
 };
 
-export default function Icon({ name, className, onClick }: IconProps): JSX.Element {
+export function Icon({ name, className, onClick }: IconProps): JSX.Element {
   return <span className={"icon " + className} onClick={onClick}><i className={name}></i></span>
 }

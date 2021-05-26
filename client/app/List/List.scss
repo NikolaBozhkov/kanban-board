@@ -3,7 +3,7 @@
 
 .list {
   width: $list-width;
-  background-color: lighten($bg-color, 7%);
+  background-color: lighten($bg-color, 9%);
   padding: 1.7rem;
   padding-top: 1.2rem;
   border-radius: $list-border-r;
@@ -54,7 +54,7 @@
 
     .action {
       display: flex;
-      transition: color $base-transition-t;
+      transition: color $transition-base;
       
       &:not(:last-child) {
         margin-bottom: 1.3rem;
