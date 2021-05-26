@@ -3,8 +3,13 @@
 @mixin reset-input {
   border: none;
   background-color: transparent;
+  color: $text-color;
 
   &:focus {
     outline: none;
+  }
+
+  &::placeholder {
+    color: darken(grayscale($text-color), 33%);
   }
 }

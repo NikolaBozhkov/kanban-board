@@ -3,6 +3,10 @@
 
 .list {
   width: $list-width;
+  background-color: lighten($bg-color, 7%);
+  padding: 1.7rem;
+  padding-top: 1.2rem;
+  border-radius: $list-border-r;
 
   .header {
     min-height: $list-header-min-height;
@@ -27,7 +31,6 @@
         align-self: stretch;
 
         &:last-of-type {
-          margin-left: 0.2rem;
           width: 2rem;
           justify-content: flex-end;
 

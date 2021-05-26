@@ -3,15 +3,21 @@
 
 $font-family: 'Nunito Sans', sans-serif;
 
-$list-spacing: 3rem;
+$list-spacing: 2rem;
 $list-width: 28rem;
+$list-border-r: 0.7rem;
 
-$bg-color: #222823;
+$bg-color: #1B2022;
 $text-color: #F4F7F5;
-$highlight-color: #E8871E;
-$accent-color: #A7A2A9;
+$highlight-color: #FF8811;
+$accent-color: #16C172;
+$yes-color: #53DD6C;
+$yes-inactive-color: lighten($yes-color, 20%);
+$no-color: #F02D3A;
+$no-inactive-color: lighten($no-color, 20%);
+$card-bg: #4D565B;
 
 $base-transition-t: 0.25s;
 
 $list-header-min-height: 5rem;
-$list-title-font-size: 1.7rem;
+$list-title-font-size: 1.85rem;
