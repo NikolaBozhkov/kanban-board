@@ -13,19 +13,10 @@ export function Board(): JSX.Element {
   const [listComponents, setListComponents] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
-    async function removeList(listId: string) {
-      try {
-        await listService.delete(listId);
-        boardStore.removeList(listId);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     boardStore.subscribeToLists(lists => {
-      setListComponents(lists.map((list) => <List list={list} key={list.id} onRemove={removeList} />));
+      setListComponents(lists.map((list) => <List list={list} key={list.id} />));
     });
-  }, [boardStore, listService]);
+  }, [boardStore]);
 
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {

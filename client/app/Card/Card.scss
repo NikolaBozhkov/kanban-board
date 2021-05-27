@@ -1,9 +1,11 @@
 @import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
 
 .card {
   $min-height: 4.4rem;
   $border-r: $list-border-r * 0.62;
   $padding-r: 0.2rem;
+  $options-highlight-w: 0.3rem;
 
   display: flex;
   align-items: center;
@@ -13,7 +15,6 @@
   margin-top: 2rem;
   min-height: $min-height;
   transition: background-color 0.1s;
-  overflow: hidden;
   position: relative;
 
   .title {
@@ -21,51 +22,110 @@
     padding: 1rem 0;
   }
 
+  .options-highlight, .options-container {
+    position: absolute;
+    display: none;
+  }
+
+  .options-highlight {
+    width: $options-highlight-w;
+    background-color: $highlight-color;
+  }
+
   .options {
     display: flex;
+    flex-shrink: 0;
     align-self: stretch;
     align-items: flex-start;
     position: relative;
+    overflow: hidden;
 
     $icon-top: ($min-height - $icon-btn-width) * 0.5;
-    .icon {
+    & > .icon {
+      z-index: 1;
       width: $icon-btn-width;
       height: $icon-btn-width;
       position: relative;
       right: -$icon-btn-width;
       top: $icon-top;
-      color: rgba($text-color, 0.35);
-      transition: color $transition-fast, transform $transition-base cubic-bezier(0.4, 1.57, 0.24, 1.03);
+      color: rgba($text-color, 0);
+      transition: color $transition-base, transform $transition-base * 0.7 ease-in;
     }
   
     .options-highlight {
-      $width: 0.3rem;
-      width: $width;
       height: $icon-top * 2 + $icon-btn-width;
-      background-color: $highlight-color;
-      border-bottom-left-radius: $width;
-      border-top-left-radius: $width;
-      position: absolute;
+      border-bottom-left-radius: $options-highlight-w;
+      border-top-left-radius: $options-highlight-w;
       right: 0;
-      opacity: 0;
+    }
+  }
+
+  .options-container {
+    z-index: 1;
+    $margin-left: 1rem;
+    left: calc(100% + #{$margin-left});
+    top: 0;
+    padding: 1rem;
+    background-color: lighten($bg-color, 7%);
+    border-radius: $border-r;
+    overflow: hidden;
+
+    &.is-active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .option-item {
+      @include default-color-transition;
+      display: flex;
+      padding: 1rem;
+
+      .icon {
+        width: 1rem;
+        margin-right: 1.3rem;
+
+        .gg-trash {
+          margin-bottom: 0.3rem;
+        }
+      }
+
+      &:hover {
+        color: $highlight-color;
+      }
+
+      &.remove {
+        color: $no-inactive-color;
+
+        &:hover {
+          color: $no-color;
+        }
+      }
+    }
+
+    .options-highlight {
+      display: block;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  &:hover .options > .icon, .options > .icon.is-active {
+    transition: color $transition-fast, transform $transition-base cubic-bezier(0.4, 1.57, 0.24, 1.03);
+    transform: translateX(-$icon-btn-width);
+    color: rgba($text-color, 0.35);
+  }
+
+  &:hover .options > .icon:hover, .options > .icon.is-active {
+    color: $highlight-color;
+
+    & + .options-highlight {
+      display: block;
     }
   }
 
   &:hover {
     cursor: pointer;
     background-color: lighten($card-bg, 3%);
-
-    .icon {
-      transform: translateX(-$icon-btn-width);
-
-      &:hover {
-        color: $highlight-color;
-        transition: color $transition-fast, transform $transition-base ease-in;
-
-        & + .options-highlight {
-          opacity: 1;
-        }
-      }
-    }
   }
 }

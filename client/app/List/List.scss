@@ -3,7 +3,7 @@
 
 .list {
   width: $list-width;
-  background-color: lighten($bg-color, 9%);
+  background-color: $list-bg;
   padding: 1.7rem;
   padding-top: 1.2rem;
   border-radius: $list-border-r;
@@ -27,6 +27,8 @@
       }
     
       & > .icon {
+        @include icon-clickable;
+        
         width: 3rem;
         align-self: stretch;
 
@@ -53,8 +55,8 @@
     display: none;
 
     .action {
+      @include default-color-transition;
       display: flex;
-      transition: color $transition-base;
       
       &:not(:last-child) {
         margin-bottom: 1.3rem;

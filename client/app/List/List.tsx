@@ -7,12 +7,11 @@ import { Card } from '../Card';
 import { DepsContext } from '../App';
 
 type ListProps = {
-  list: IPopulatedList,
-  onRemove: (listId: string) => void
+  list: IPopulatedList
 };
 
-export function List({ list, onRemove }: ListProps): JSX.Element {
-  const { cardService, boardStore } = useContext(DepsContext);
+export function List({ list }: ListProps): JSX.Element {
+  const { cardService, listService, boardStore } = useContext(DepsContext);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isAddingCard, setIsAddingCard] = useState(false);
   const addCardTitleInput = useRef<HTMLInputElement | null>(null);
@@ -22,6 +21,15 @@ export function List({ list, onRemove }: ListProps): JSX.Element {
       setIsAddingCard(true);
     } else if (addCardTitleInput.current != null) {
       addCardTitleInput.current.focus();
+    }
+  }
+
+  async function handleClickRemove() {
+    try {
+      await listService.delete(list.id);
+      boardStore.removeList(list.id);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -86,7 +94,7 @@ export function List({ list, onRemove }: ListProps): JSX.Element {
           <Icon name="gg-math-plus" onClick={handleClickAddCard} />
           <Icon name="gg-more-alt" onClick={() => setIsActionsOpen(!isActionsOpen)} />
           <div className={actionsClassNames}>
-            <div className="action" onClick={() => onRemove(list.id)}>
+            <div className="action" onClick={handleClickRemove}>
               <Icon name="gg-trash" />
               <span>Remove</span>
             </div>

@@ -13,3 +13,22 @@
     color: darken(grayscale($text-color), 33%);
   }
 }
+
+@mixin default-color-transition {
+  transition: color $transition-base;
+}
+
+@mixin icon-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin icon-clickable {
+  @include default-color-transition;
+  
+  &:hover {
+    cursor: pointer;
+    color: $highlight-color;
+  }
+}

@@ -15,9 +15,11 @@ $highlight-color: #FF8811;
 $accent-color: #16C172;
 $yes-color: #53DD6C;
 $yes-inactive-color: lighten($yes-color, 20%);
-$no-color: #F02D3A;
-$no-inactive-color: lighten($no-color, 20%);
+$no-color: #F04651;
+$no-inactive-color: lighten($no-color, 15%);
+
 $card-bg: #525B60;
+$list-bg: lighten($bg-color, 9%);
 
 $transition-base: 0.25s;
 $transition-fast: 0.1s;
