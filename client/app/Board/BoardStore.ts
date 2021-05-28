@@ -88,6 +88,17 @@ export class BoardStore {
     return store.getState().lists;
   }
 
+  getCardAndList(cardId: string): { card: ICard, list: IList } | undefined {
+    const cardsWithList = this.getLists().reduce((res, list) => {
+      const current = list.cards.map(card => { 
+        return { card, list: list as IList };
+      });
+      return res.concat(current); 
+    }, new Array<{ card: ICard, list: IList }>());
+
+    return cardsWithList.find(elem => elem.card.id == cardId);
+  }
+
   setLists(lists: IPopulatedList[]): void {
     store.dispatch(createSetListsAction(lists));
   }

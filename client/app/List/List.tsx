@@ -84,6 +84,7 @@ export function List({ list }: ListProps): JSX.Element {
     'adding-card': isAddingCard
   });
 
+  console.log(list.cards.map(c => c.id));
   const cards = list.cards.map(card => <Card {...card} key={card.id} />);
   
   return (

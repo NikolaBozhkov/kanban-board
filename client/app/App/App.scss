@@ -37,20 +37,11 @@ $divider-width: 1px;
       }
 
       .icon {
-        @include icon-clickable;
-        
+        @include clickable;
+
         i {
           margin-top: 0.15rem;
           transition: transform $transition-base * 1.5 cubic-bezier(.31,2.06,.36,1.03);
-          transition: color $transition-base;
-
-          &.gg-math-plus {
-            color: $text-color;
-          }
-        }
-
-        &:hover i.gg-math-plus {
-          color: $highlight-color;
         }
       }
 
@@ -67,24 +58,22 @@ $divider-width: 1px;
       .icon {
         width: $icon-btn-width;
 
-        &:hover {
-          i.gg-check {
-            color: $yes-color;
-          }
-  
-          i.gg-math-plus {
-            color: $no-color;
-          }
+        &.confirm-add-icon:hover {
+          color: $yes-color;
+        }
+
+        &.add-toggle-icon:hover {
+          color: $no-color;
         }
       }
 
       .header .add-toggle-icon {
         justify-content: flex-end;
         width: $icon-btn-width * $cancel-icon-width-w;
+        color: $no-inactive-color;
         
         i {
           transform: rotate(45deg);
-          color: $no-inactive-color;
         }
       }
 

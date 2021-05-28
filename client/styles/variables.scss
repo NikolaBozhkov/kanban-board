@@ -6,6 +6,7 @@ $font-family: 'Nunito Sans', sans-serif;
 $list-spacing: 2rem;
 $list-width: 28rem;
 $list-border-r: 0.7rem;
+$card-border-r: $list-border-r * 0.62;
 
 $icon-btn-width: 3rem;
 
@@ -17,11 +18,12 @@ $yes-color: #53DD6C;
 $yes-inactive-color: lighten($yes-color, 20%);
 $no-color: #F04651;
 $no-inactive-color: lighten($no-color, 15%);
+$overlay-bg-color: rgba(black, 0.3);
 
 $card-bg: #525B60;
 $list-bg: lighten($bg-color, 9%);
 
-$transition-base: 0.25s;
+$transition-base: 0.2s;
 $transition-fast: 0.1s;
 
 $list-header-min-height: 5rem;

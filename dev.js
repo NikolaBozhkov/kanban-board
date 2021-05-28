@@ -18,6 +18,7 @@ const devConfigClient = {
 const clientDevServerOptions = {
   contentBase: path.join(__dirname, 'dist'),
   hot: true,
+  historyApiFallback: true,
 };
 
 webpackDevServer.addDevServerEntrypoints(devConfigClient, clientDevServerOptions);

@@ -27,8 +27,8 @@
       }
     
       & > .icon {
-        @include icon-clickable;
-        
+        @include clickable;
+
         width: 3rem;
         align-self: stretch;
 

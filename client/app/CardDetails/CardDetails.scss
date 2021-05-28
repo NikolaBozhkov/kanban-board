@@ -1,0 +1,47 @@
+@import '../../styles/variables.scss';
+@import '../../styles/mixins.scss';
+
+.card-details-wrapper {
+  @include overlay;
+  @include flex-center;
+  background-color: $overlay-bg-color;
+
+  .card-details {
+    background-color: mix($list-bg, $card-bg, 0.5);
+    border-radius: $list-border-r;
+    padding: 2.3rem 3rem;
+
+    .section {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 3rem;
+
+      .icon {
+        margin-right: 2rem;
+        --ggs: 1.15;
+
+        .gg-calendar-two {
+          --ggs: 1.3;
+          margin-top: 9px;
+        }
+
+        .gg-notes, .gg-time {
+          margin-top: 5px;
+        }
+      }
+    }
+
+    .list-title {
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    .title {
+      font-size: 3rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+}
