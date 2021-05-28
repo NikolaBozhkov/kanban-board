@@ -15,9 +15,17 @@ export interface IPopulatedList extends IList {
   cards: ICard[];
 }
 
+export enum ActionType {
+  Edit,
+  Add,
+  Move
+}
+
 export interface IAction {
   userId: string;
   description: string;
+  type: ActionType;
+  date: Date;
 }
 
 export interface IUser {

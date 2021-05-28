@@ -3,14 +3,33 @@ import React, { useState, useRef } from 'react';
 type RefInput = {
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
-  onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  ref: React.MutableRefObject<HTMLInputElement | null>;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  ref: React.MutableRefObject<HTMLInputElement>;
   onKeyDown: React.KeyboardEventHandler;
   onFocus: React.FocusEventHandler;
   domProps: Omit<RefInput, 'setValue' | 'domProps'>; 
 };
 
+// Needs a separate type because of text area ref being LegacyRef
+type RefTextArea = {
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+  ref: React.LegacyRef<HTMLTextAreaElement>;
+  onKeyDown: React.KeyboardEventHandler;
+  onFocus: React.FocusEventHandler;
+  domProps: Omit<RefTextArea, 'setValue' | 'domProps'>; 
+};
+
+export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void): RefTextArea {
+  return useRefFormInputBase(enterHandler, escapeHandler) as RefTextArea;
+}
+
 export function useRefInput(enterHandler?: () => void, escapeHandler?: () => void): RefInput {
+  return useRefFormInputBase(enterHandler, escapeHandler) as RefInput;
+}
+
+function useRefFormInputBase(enterHandler?: () => void, escapeHandler?: () => void): RefInput | RefTextArea {
   const [value, setValue] = useState('');
   
   function onChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -19,19 +38,21 @@ export function useRefInput(enterHandler?: () => void, escapeHandler?: () => voi
   }
 
   const [preEditValue, setPreEditValue] = useState('');
-  const ref = useRef<HTMLInputElement | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ref = useRef<any>(null);
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {
       enterHandler && enterHandler();
 
-      if (ref.current) {
+      if (ref && ref.current) {
         ref.current.blur();
       }
     } else if (event.key == 'Escape') {
       escapeHandler && escapeHandler();
 
-      if (ref.current) {
+      if (ref && ref.current) {
         setValue(preEditValue);
         ref.current.blur();
       }

@@ -7,16 +7,33 @@
   background-color: $overlay-bg-color;
 
   .card-details {
-    background-color: mix($list-bg, $card-bg, 0.5);
+    background-color: mix($list-bg, $card-bg, 50%);
     border-radius: $list-border-r;
-    padding: 2.3rem 3rem;
+    padding: 3rem;
+    padding-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+
+    .highlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0.5rem;
+      background-color: $accent-color;
+    }
 
     .section {
       display: flex;
       align-items: flex-start;
       margin-bottom: 3rem;
+      
+      & > .icon, h1, .title {
+        color: mix(#fff, $accent-color, 30%);
+      }
 
-      .icon {
+      & > .icon {
+        
         margin-right: 2rem;
         --ggs: 1.15;
 
@@ -38,10 +55,23 @@
 
     .title {
       font-size: 3rem;
+
+      input {
+        overflow: visible;
+      }
     }
 
     h1 {
       font-size: 2rem;
+    }
+
+    .action {
+      display: flex;
+
+      .icon {
+        margin-right: 1rem;
+        --ggs: 0.7;
+      }
     }
   }
 }
