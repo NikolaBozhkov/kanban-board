@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { HttpClient } from '../../http/HttpClient';
 import { Board } from '../Board';
 import { CardDetails } from '../CardDetails';
-import { BoardStore } from '../Board/BoardStore';
+import { BoardStore } from '../store/BoardStore';
 import { CardService, ICardService } from '../Card/CardService';
 import { ListService, IListService } from '../List/ListService';
 

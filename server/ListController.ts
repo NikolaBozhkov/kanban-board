@@ -3,6 +3,8 @@ import { Controller, Get, Post, Delete } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
 import { listsMap, cardsMap } from './data-store';
+import { createError } from './helpers';
+import { getPopulatedLists } from '../shared/data-utils';
 
 @Controller('api/lists')
 export class ListController {
@@ -10,12 +12,12 @@ export class ListController {
   @Post()
   add(req: Request, res: Response) {
     if (req.body.title === undefined) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title is required' });
+      return res.status(StatusCodes.BAD_REQUEST).json(createError('Title is required'));
     }
 
     const title = req.body.title as string;
     if (title == "") {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Title cannot be empty' });
+      return res.status(StatusCodes.BAD_REQUEST).json(createError('Title cannot be empty'));
     }
 
     const id = uuidv4();
@@ -28,13 +30,13 @@ export class ListController {
   @Delete()
   remove(req: Request, res: Response) {
     if (req.body.id === undefined) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: 'List id is required' });
+      return res.status(StatusCodes.BAD_REQUEST).json(createError('List id is required'));
     }
 
     const id = req.body.id as string;
     const didRemoveList = listsMap.delete(id);
     if (!didRemoveList) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: `Cannot find list with the given id: ${id}` })
+      return res.status(StatusCodes.NOT_FOUND).json(createError(`Cannot find list with the given id: ${id}`));
     }
 
     res.sendStatus(StatusCodes.NO_CONTENT);
@@ -47,14 +49,7 @@ export class ListController {
 
   @Get('populated')
   getAllPopulated(req: Request, res: Response) {
-    let populatedLists = [...listsMap.values()].map((list) => {
-      const cards = [...cardsMap.values()].filter((card) => card.listId == list.id);
-      return {
-        ...list,
-        cards
-      };
-    });
-
+    const populatedLists = getPopulatedLists(listsMap, cardsMap);
     res.status(StatusCodes.OK).json(populatedLists);
   }
 }

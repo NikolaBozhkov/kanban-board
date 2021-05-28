@@ -12,7 +12,7 @@ export class HttpClient {
   }
 
   async put<T>(apiUrl: string, body: unknown): Promise<T> {
-    return this.genericRequest<T>(apiUrl, 'POST', body);
+    return this.genericRequest<T>(apiUrl, 'PUT', body);
   }
 
   async delete<T>(apiUrl: string, body: unknown): Promise<T> {

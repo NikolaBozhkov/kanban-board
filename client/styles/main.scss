@@ -23,6 +23,10 @@ body {
     font-family: $font-family;
     font-weight: 400;
   }
+
+  input {
+    @include reset-input;
+  }
 }
 
 .icon {
