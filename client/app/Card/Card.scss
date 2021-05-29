@@ -20,6 +20,8 @@
   .title {
     flex-grow: 1;
     padding: 1rem 0;
+    word-wrap: break-word;
+    min-width: 0;
   }
 
   .options-highlight, .options-container {

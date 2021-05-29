@@ -5,7 +5,7 @@ import { Icon } from '../Icon';
 import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
-import { useRefTextArea } from '../hooks/utility';
+import { useRefTextArea } from '../hooks/input-utils';
 
 type ListProps = {
   list: IPopulatedList
@@ -45,7 +45,7 @@ export function List({ list }: ListProps): JSX.Element {
   }
 
   async function addCard() {
-    const title = addCardRef.value;
+    const title = addCardRef.value.trim();
     if (title == '') { return; }
 
     try {
@@ -58,10 +58,11 @@ export function List({ list }: ListProps): JSX.Element {
   }
 
   async function updateListTitle() {
-    const title = titleRef.value;
-    if (title == '') { 
+    // Guard title empty or value unchanged
+    const title = titleRef.value.trim();
+    if (title == '' || titleRef.value == titleRef.preEditValue) { 
       titleRef.setValue(titleRef.preEditValue);
-      return; 
+      return;
     }
   
     try {

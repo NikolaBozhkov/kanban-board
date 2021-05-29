@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActionType, ICard, IList } from '../../../shared/data-types';
 import { DepsContext } from '../App';
-import { useRefTextArea } from '../hooks/utility';
+import { useRefTextArea } from '../hooks/input-utils';
 import { Icon } from '../Icon';
 import './CardDetails.scss';
 
