@@ -29,9 +29,9 @@ body {
   }
 
   textarea {
-    // min-height: 44px;
-    line-height: 2rem;
-    min-height: 4rem;
+    display: block;
+    overflow: hidden;
+    resize: none;
   }
 }
 

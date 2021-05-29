@@ -11,7 +11,7 @@
   align-items: center;
   background-color: $card-bg;
   border-radius: $border-r;
-  padding-left: 1.5rem;
+  padding-left: $card-padding-lr;
   margin-top: 2rem;
   min-height: $min-height;
   transition: background-color $transition-fast;

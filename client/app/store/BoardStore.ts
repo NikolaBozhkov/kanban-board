@@ -6,6 +6,7 @@ import { getPopulatedLists } from '../../../shared/data-utils';
 enum Action {
   SetLists,
   AddList,
+  UpdateList,
   RemoveList,
   AddCard,
   UpdateCard
@@ -23,12 +24,18 @@ function createSetListsAction(lists: IPopulatedList[]): SetListsAction {
 
 // Add list
 
-type AddListAction = ReduxAction<Action> & {
+type ListAction = ReduxAction<Action> & {
   list: IList
 };
 
-function createAddListAction(list: IList): AddListAction {
+function createAddListAction(list: IList): ListAction {
   return { type: Action.AddList, list };
+}
+
+// Update list
+
+function createUpdateListAction(list: IList): ListAction {
+  return { type: Action.UpdateList, list };
 }
 
 // Remove list
@@ -99,8 +106,9 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
       const lists = (action as SetListsAction).lists;
       return syncFromPopulatedLists(lists);
     }
-    case Action.AddList: {
-      const newList = (action as AddListAction).list;
+    case Action.AddList:
+    case Action.UpdateList: {
+      const newList = (action as ListAction).list;
       const listsMap = state.listsMap.set(newList.id, newList);
       return syncFromMaps(listsMap, state.cardsMap);
     }
@@ -150,6 +158,10 @@ export class BoardStore {
 
   addList(list: IList): void {
     store.dispatch(createAddListAction(list));
+  }
+
+  updateList(list: IList): void {
+    store.dispatch(createUpdateListAction(list));
   }
 
   removeList(id: string): void {

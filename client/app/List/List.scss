@@ -18,11 +18,10 @@
       display: flex;
       align-items: center;
       position: relative;
+      padding-bottom: 0.5rem;
     
       .title {
         flex-grow: 1;
-        display: inline-block;
-        padding: 1rem 0;
         font-size: $list-title-font-size;
       }
     

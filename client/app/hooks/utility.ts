@@ -1,42 +1,31 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 
-type RefInput = {
+type RefInput<T> = {
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  ref: React.MutableRefObject<HTMLInputElement>;
+  undoEdit: () => void;
+  onChange: React.ChangeEventHandler<T>;
   onKeyDown: React.KeyboardEventHandler;
   onFocus: React.FocusEventHandler;
-  domProps: Omit<RefInput, 'setValue' | 'domProps'>; 
+  ref: React.MutableRefObject<T | null>;
+  domProps: Omit<RefInput<T>, 'setValue' | 'undoEdit' | 'domProps'>; 
 };
 
-// Needs a separate type because of text area ref being LegacyRef
-type RefTextArea = {
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
-  ref: React.MutableRefObject<HTMLTextAreaElement>;
-  onKeyDown: React.KeyboardEventHandler;
-  onFocus: React.FocusEventHandler;
-  onBlur: React.FocusEventHandler;
-  domProps: Omit<RefTextArea, 'setValue' | 'domProps'>; 
-};
-
-export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void): RefTextArea {
-  return useRefFormInputBase(enterHandler, escapeHandler) as RefTextArea;
+export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void): RefInput<HTMLTextAreaElement> {
+  return useRefFormInputBase<HTMLTextAreaElement>(enterHandler, escapeHandler);
 }
 
-export function useRefInput(enterHandler?: () => void, escapeHandler?: () => void): RefInput {
-  return useRefFormInputBase(enterHandler, escapeHandler) as RefInput;
+export function useRefInput(enterHandler?: () => void, escapeHandler?: () => void): RefInput<HTMLInputElement> {
+  return useRefFormInputBase<HTMLInputElement>(enterHandler, escapeHandler);
 }
 
-function useRefFormInputBase(enterHandler?: () => void, escapeHandler?: () => void): RefInput | RefTextArea {
-  const [value, setValue] = useState('erere');
+function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(enterHandler?: () => void, escapeHandler?: () => void): RefInput<T> {
+  const [value, setValue] = useState('');
   const [preEditValue, setPreEditValue] = useState('');
   let didConsumeEnterHandler = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ref = useRef<any>(null);
+  const ref = useRef<T>(null);
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {
@@ -57,7 +46,7 @@ function useRefFormInputBase(enterHandler?: () => void, escapeHandler?: () => vo
     }
   }
 
-  function onChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function onChange(event: React.ChangeEvent<T>) {
     setValue(event.target.value);
   }
 
@@ -71,16 +60,34 @@ function useRefFormInputBase(enterHandler?: () => void, escapeHandler?: () => vo
     !didConsumeEnterHandler && enterHandler && enterHandler();
   }
 
+  function undoEdit() {
+    setValue(preEditValue);
+  }
+
   useLayoutEffect(() => {
-    const textArea = ref.current as HTMLTextAreaElement;
-    textArea.style.height = 'inherit';
-    textArea.style.height = `${textArea.scrollHeight}px`;
+    // Only resize textarea
+    if ((ref.current as HTMLElement)?.nodeName.toLowerCase() == 'textarea') {
+      const textArea = ref.current as unknown as HTMLTextAreaElement;
+
+      // Get the computed font size and use as base height
+      const computed = getComputedStyle(textArea);
+      const fontSize = Number(computed.fontSize.slice(0, computed.fontSize.length - 2));
+
+      textArea.style.height = 'inherit';
+      textArea.style.height = `${fontSize}px`;
+
+      // if the textarea becomes multiline use the scrollHeight
+      if (textArea.scrollHeight > textArea.clientHeight) {
+        textArea.style.height = `${textArea.scrollHeight}px`;
+      }
+    }
   }, [ref, value]);
 
   const refInput = {
     value,
     setValue,
     onChange,
+    undoEdit,
     ref,
     onKeyDown,
     onFocus,
@@ -88,6 +95,6 @@ function useRefFormInputBase(enterHandler?: () => void, escapeHandler?: () => vo
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setValue: _, ...domProps } = refInput;
+  const { setValue: _, undoEdit: __, ...domProps } = refInput;
   return { ...refInput, domProps };
 }

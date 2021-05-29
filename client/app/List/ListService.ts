@@ -6,6 +6,7 @@ export interface IListService {
   getAllPopulated(): Promise<IPopulatedList[]>;
   add(title: string): Promise<IList>;
   delete(id: string): Promise<void>;
+  update(id: string, title: string): Promise<IList>;
 }
 
 export class ListService implements IListService {
@@ -26,5 +27,9 @@ export class ListService implements IListService {
 
   async delete(id: string): Promise<void> {
     return this.http.voidDelete('lists', { id });
+  }
+
+  async update(id: string, title: string): Promise<IList> {
+    return this.http.put('lists', { id, title });
   }
 }

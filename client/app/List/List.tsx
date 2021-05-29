@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import ContentEditable from 'react-contenteditable';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
 import { Icon } from '../Icon';
 import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
-import { useRefTextArea } from '../hooks/utility';
+import { useRefInput, useRefTextArea } from '../hooks/utility';
 
 type ListProps = {
   list: IPopulatedList
@@ -17,7 +18,11 @@ export function List({ list }: ListProps): JSX.Element {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [cards, setCards] = useState<JSX.Element[]>([]);
 
-  const addCardTextAreaRef = useRefTextArea(
+  const titleRef = useRefTextArea(
+    updateListTitle
+  );
+
+  const addCardRef = useRefTextArea(
     function enterHandler() {
       addCard();
       setIsAddingCard(false);
@@ -41,7 +46,7 @@ export function List({ list }: ListProps): JSX.Element {
   }
 
   async function addCard() {
-    const title = addCardTextAreaRef.value;
+    const title = addCardRef.value;
     if (title == '') { return; }
 
     try {
@@ -53,21 +58,38 @@ export function List({ list }: ListProps): JSX.Element {
     }
   }
 
+  async function updateListTitle() {
+    const title = titleRef.value;
+      if (title == '') { 
+        titleRef.undoEdit();
+        return; 
+      }
+  
+      try {
+        const updatedList = await listService.update(list.id, title);
+        boardStore.updateList(updatedList);
+      } catch (error) {
+        console.log(error);
+      }
+  }
+
   // Update text area based on isAddingCard
   useEffect(() => {
-    const textArea = addCardTextAreaRef.ref.current;
+    const textArea = addCardRef.ref.current;
 
     if (isAddingCard) {
       textArea && textArea.focus();
     } else {
-      addCardTextAreaRef.setValue('');
+      addCardRef.setValue('');
     }
-  }, [isAddingCard, addCardTextAreaRef]);
+  }, [isAddingCard, addCardRef]);
 
   // Create cards components from list
   useEffect(() => {
     console.log(list.cards.map(c => c.id));
     setCards(list.cards.map(card => <Card {...card} key={card.id} />));
+    titleRef.setValue(list.title);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
   const actionsClassNames = classnames({
@@ -85,7 +107,7 @@ export function List({ list }: ListProps): JSX.Element {
     <div className="list">
       <div className="header">
         <div className="info-wrapper">
-          <span className="title">{list.title}</span>
+          <textarea { ...titleRef.domProps } className="title" />
           <Icon name="gg-math-plus" onClick={handleClickAddCard} />
           <Icon name="gg-more-alt" onClick={() => setIsActionsOpen(!isActionsOpen)} />
           <div className={actionsClassNames}>
@@ -99,7 +121,7 @@ export function List({ list }: ListProps): JSX.Element {
       </div>
       <div className="cards">
         <div className={addCardClassNames}>
-          <textarea placeholder="Enter card title..." { ...addCardTextAreaRef.domProps } />
+          <textarea placeholder="Enter card title..." { ...addCardRef.domProps } />
         </div>
         {cards}
       </div>
