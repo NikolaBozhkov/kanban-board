@@ -83,11 +83,14 @@
     display: none;
 
     &.adding-card {
-      display: block;
+      display: flex;
+      align-items: stretch;
     }
 
-    input {
-      @include reset-input;
+    textarea {
+      flex-grow: 1;
+      margin: 1rem 0;
+      margin-right: $card-padding-lr;
     }
   }
 }

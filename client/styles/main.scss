@@ -17,15 +17,21 @@ html {
 body {
   background-color: $bg-color;
 
-  &, input {
+  &, input, textarea {
     color: $text-color;
     font-size: 1.6rem;
     font-family: $font-family;
     font-weight: 400;
   }
 
-  input {
+  input, textarea {
     @include reset-input;
+  }
+
+  textarea {
+    // min-height: 44px;
+    line-height: 2rem;
+    min-height: 4rem;
   }
 }
 

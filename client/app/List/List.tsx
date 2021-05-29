@@ -5,6 +5,7 @@ import { Icon } from '../Icon';
 import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
+import { useRefTextArea } from '../hooks/utility';
 
 type ListProps = {
   list: IPopulatedList
@@ -14,14 +15,20 @@ export function List({ list }: ListProps): JSX.Element {
   const { cardService, listService, boardStore } = useContext(DepsContext);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isAddingCard, setIsAddingCard] = useState(false);
-  const addCardTitleInput = useRef<HTMLInputElement | null>(null);
+  const [cards, setCards] = useState<JSX.Element[]>([]);
+
+  const addCardTextAreaRef = useRefTextArea(
+    function enterHandler() {
+      addCard();
+      setIsAddingCard(false);
+    },
+    function escapeHandler() {
+      setIsAddingCard(false);
+    }
+  );
 
   function handleClickAddCard() {
-    if (!isAddingCard) {
-      setIsAddingCard(true);
-    } else if (addCardTitleInput.current != null) {
-      addCardTitleInput.current.focus();
-    }
+    setIsAddingCard(true);
   }
 
   async function handleClickRemove() {
@@ -33,26 +40,8 @@ export function List({ list }: ListProps): JSX.Element {
     }
   }
 
-  function handleCardTitleInputKeyDown(event: React.KeyboardEvent) {
-    if (event.key == 'Enter') {
-      addCard();
-    } else if (event.key == 'Escape') {
-      setIsAddingCard(false);
-    }
-  }
-
-  function handleCardTitleInputBlur() {
-    if (addCardTitleInput.current != null && addCardTitleInput.current.value != '') {
-      addCard();
-    } else {
-      setIsAddingCard(false);
-    }
-  }
-
   async function addCard() {
-    if (addCardTitleInput.current == null) {  return; }
-
-    const title = addCardTitleInput.current.value;
+    const title = addCardTextAreaRef.value;
     if (title == '') { return; }
 
     try {
@@ -64,14 +53,22 @@ export function List({ list }: ListProps): JSX.Element {
     }
   }
 
+  // Update text area based on isAddingCard
   useEffect(() => {
-    if (addCardTitleInput.current == null) { return; }
+    const textArea = addCardTextAreaRef.ref.current;
+
     if (isAddingCard) {
-      addCardTitleInput.current.focus();
+      textArea && textArea.focus();
     } else {
-      addCardTitleInput.current.value = '';
+      addCardTextAreaRef.setValue('');
     }
-  }, [isAddingCard]);
+  }, [isAddingCard, addCardTextAreaRef]);
+
+  // Create cards components from list
+  useEffect(() => {
+    console.log(list.cards.map(c => c.id));
+    setCards(list.cards.map(card => <Card {...card} key={card.id} />));
+  }, [list]);
 
   const actionsClassNames = classnames({
     actions: true,
@@ -83,9 +80,6 @@ export function List({ list }: ListProps): JSX.Element {
     'add-card': true,
     'adding-card': isAddingCard
   });
-
-  console.log(list.cards.map(c => c.id));
-  const cards = list.cards.map(card => <Card {...card} key={card.id} />);
   
   return (
     <div className="list">
@@ -105,7 +99,7 @@ export function List({ list }: ListProps): JSX.Element {
       </div>
       <div className="cards">
         <div className={addCardClassNames}>
-          <input type="text" placeholder="Enter card title..." ref={addCardTitleInput} onKeyDown={handleCardTitleInputKeyDown} onBlur={handleCardTitleInputBlur} />
+          <textarea placeholder="Enter card title..." { ...addCardTextAreaRef.domProps } />
         </div>
         {cards}
       </div>
