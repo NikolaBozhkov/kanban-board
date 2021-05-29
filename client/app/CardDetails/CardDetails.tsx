@@ -1,8 +1,8 @@
-import React, { LegacyRef, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActionType, ICard, IList } from '../../../shared/data-types';
 import { DepsContext } from '../App';
-import { useRefInput, useRefTextArea } from '../hooks/utility';
+import { useRefTextArea } from '../hooks/utility';
 import { Icon } from '../Icon';
 import './CardDetails.scss';
 

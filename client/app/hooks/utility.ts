@@ -1,14 +1,19 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 
-type RefInput<T> = {
+type RefInputDomProps<T> = {
   value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  undoEdit: () => void;
   onChange: React.ChangeEventHandler<T>;
   onKeyDown: React.KeyboardEventHandler;
   onFocus: React.FocusEventHandler;
+  onBlur: React.FocusEventHandler;
   ref: React.MutableRefObject<T | null>;
-  domProps: Omit<RefInput<T>, 'setValue' | 'undoEdit' | 'domProps'>; 
+}
+
+type RefInput<T> = {
+  value: string,
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  preEditValue: string;
+  domProps: RefInputDomProps<T>; 
 };
 
 export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void): RefInput<HTMLTextAreaElement> {
@@ -22,10 +27,8 @@ export function useRefInput(enterHandler?: () => void, escapeHandler?: () => voi
 function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(enterHandler?: () => void, escapeHandler?: () => void): RefInput<T> {
   const [value, setValue] = useState('');
   const [preEditValue, setPreEditValue] = useState('');
-  let didConsumeEnterHandler = false;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<T>(null);
+  let didConsumeEnterHandler = false;
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {
@@ -53,6 +56,7 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(e
   function onFocus() {
     setPreEditValue(value);
     didConsumeEnterHandler = false;
+    adjustTextArea();
   }
 
   function onBlur() {
@@ -60,11 +64,7 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(e
     !didConsumeEnterHandler && enterHandler && enterHandler();
   }
 
-  function undoEdit() {
-    setValue(preEditValue);
-  }
-
-  useLayoutEffect(() => {
+  function adjustTextArea() {
     // Only resize textarea
     if ((ref.current as HTMLElement)?.nodeName.toLowerCase() == 'textarea') {
       const textArea = ref.current as unknown as HTMLTextAreaElement;
@@ -81,20 +81,25 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(e
         textArea.style.height = `${textArea.scrollHeight}px`;
       }
     }
-  }, [ref, value]);
+  }
 
-  const refInput = {
+  useLayoutEffect(() => {
+    adjustTextArea();
+  }, [value]);
+
+  const domProps: RefInputDomProps<T> = {
     value,
-    setValue,
     onChange,
-    undoEdit,
-    ref,
     onKeyDown,
     onFocus,
-    onBlur
+    onBlur,
+    ref
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setValue: _, undoEdit: __, ...domProps } = refInput;
-  return { ...refInput, domProps };
+  return {
+    value,
+    setValue,
+    preEditValue,
+    domProps
+  };
 }

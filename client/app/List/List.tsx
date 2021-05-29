@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import ContentEditable from 'react-contenteditable';
+import React, { useContext, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
 import { Icon } from '../Icon';
 import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
-import { useRefInput, useRefTextArea } from '../hooks/utility';
+import { useRefTextArea } from '../hooks/utility';
 
 type ListProps = {
   list: IPopulatedList
@@ -60,22 +59,22 @@ export function List({ list }: ListProps): JSX.Element {
 
   async function updateListTitle() {
     const title = titleRef.value;
-      if (title == '') { 
-        titleRef.undoEdit();
-        return; 
-      }
+    if (title == '') { 
+      titleRef.setValue(titleRef.preEditValue);
+      return; 
+    }
   
-      try {
-        const updatedList = await listService.update(list.id, title);
-        boardStore.updateList(updatedList);
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      const updatedList = await listService.update(list.id, title);
+      boardStore.updateList(updatedList);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // Update text area based on isAddingCard
   useEffect(() => {
-    const textArea = addCardRef.ref.current;
+    const textArea = addCardRef.domProps.ref.current;
 
     if (isAddingCard) {
       textArea && textArea.focus();
