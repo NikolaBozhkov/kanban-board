@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActionType, ICard, IList } from '../../../shared/data-types';
@@ -12,19 +13,64 @@ export function CardDetails(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { boardStore, cardService } = useContext(DepsContext);
 
-  const cardTitle = useRefTextArea(
-    async function enterHandler() {
-      if (!card) { return; }
+  const cardTitle = useRefTextArea(cardTitleEnterHandler);
+  async function cardTitleEnterHandler() {
+    const title = cardTitle.value.trim();
+    if (!card || title == card.title) { return; }
 
-      try {
-        const updatedCard = await cardService.update(card.id, { title: cardTitle.value });
-        boardStore.updateCard(updatedCard);
-      } catch (error) {
-        cardTitle.setValue(card.title);
-        console.log(error);
-      }
+    try {
+      const updatedCard = await cardService.update(card.id, { title });
+      boardStore.updateCard(updatedCard);
+    } catch (error) {
+      cardTitle.setValue(card.title);
+      console.log(error);
     }
-  );
+  }
+
+  // This allows for blur to be used as confirmation
+  // It has to give enough time for cancel button click to be able to trigger
+  let shouldUpdateDescription = false;
+  const cardDescription = useRefTextArea(function enterHandler() {
+    shouldUpdateDescription = true;
+    setTimeout(updateDescription, 300);
+  }, function escapeHandler() {
+    setIsEditingDescription(false);
+  }, true);
+
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+
+  function handleCardDescriptionFocus(event: React.FocusEvent) {
+    cardDescription.domProps.onFocus(event);
+    setIsEditingDescription(true);
+  }
+  
+  async function updateDescription() {
+    setIsEditingDescription(false);
+    if (!card || !shouldUpdateDescription) { return; }
+
+    try {
+      const description = cardDescription.value.trim();
+      const updatedCard = await cardService.update(card.id, { description });
+      boardStore.updateCard(updatedCard);
+    } catch (error) {
+      cardDescription.setValue(card.description);
+      console.log(error);
+    }
+
+    shouldUpdateDescription = false;
+  }
+
+  async function handleConfirmDescriptionEdit() {
+    console.log('confirm');
+    updateDescription();
+  }
+
+  function handleCancelDescriptionEdit() {
+    console.log('cancel');
+    cardDescription.setValue(card?.description ?? '');
+    shouldUpdateDescription = false;
+    setIsEditingDescription(false);
+  }
 
   const loadCardDetailsFromStore = useCallback(() => {
     const cardId = boardStore.getLists()[0]?.cards[0]?.id ?? '';
@@ -33,8 +79,9 @@ export function CardDetails(): JSX.Element {
       setCard(cardDetails.card);
       setList(cardDetails.list);
       cardTitle.setValue(cardDetails.card.title);
+      cardDescription.setValue(cardDetails.card.description);
     }
-  }, [boardStore, id, cardTitle]);
+  }, [boardStore, id, cardTitle, cardDescription]);
 
   // Fetch the card details from store on mount
   useEffect(() => {
@@ -62,7 +109,15 @@ export function CardDetails(): JSX.Element {
             <Icon name="gg-notes"/>
             <div>
               <h1>Description:</h1>
-              <div>{card.description}</div>
+              <div>
+                <textarea { ...cardDescription.domProps } onFocus={handleCardDescriptionFocus} />
+                {isEditingDescription &&
+                  <div>
+                    <span onClick={handleConfirmDescriptionEdit}>OK</span>&nbsp;
+                    <span onClick={handleCancelDescriptionEdit}>Cancel</span>
+                  </div>
+                }
+              </div>
             </div>
           </div>
           <div className="section">

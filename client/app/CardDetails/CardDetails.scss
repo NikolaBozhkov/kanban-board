@@ -13,6 +13,8 @@
     padding-bottom: 2rem;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
     .highlight {
       position: absolute;
@@ -54,11 +56,7 @@
     }
 
     .title {
-      font-size: 3rem;
-
-      input {
-        overflow: visible;
-      }
+      font-size: 2.7rem;
     }
 
     h1 {

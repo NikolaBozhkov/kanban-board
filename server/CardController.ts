@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { Controller, Middleware, Post, Put } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
-import { cardsMap, listsMap, createCard } from './data-store';
+import { cardsMap, createCard } from './data-store';
 import { createError } from './helpers';
 import { ActionType } from '../shared/data-types';
 import { cardByIdMiddlewareFactory, CardRecord, listByIdMiddlewareFactory, ListRecord, titleMiddlewareFactory, TitleRecord } from './common-middleware';
-
-// type CardUpdateFieldsRecord = Record<string, any> & Record<'title'?, string>;
 
 @Controller('api/cards')
 export class CardController {
@@ -49,7 +47,7 @@ export class CardController {
     }
 
     if (req.body.description !== undefined) {
-      card.description = req.body.description as string;
+      card.description = (req.body.description as string).trim();
       modifiedProps.push('description');
     }
 

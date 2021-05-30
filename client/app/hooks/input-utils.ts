@@ -13,33 +13,40 @@ type RefInput<T> = {
   value: string,
   setValue: React.Dispatch<React.SetStateAction<string>>;
   preEditValue: string;
+  isEditing: boolean;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   domProps: RefInputDomProps<T>; 
 };
 
-export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void): RefInput<HTMLTextAreaElement> {
-  return useRefFormInputBase<HTMLTextAreaElement>(enterHandler, escapeHandler);
+export function useRefTextArea(enterHandler?: () => void, escapeHandler?: () => void, allowsNewLine = false): RefInput<HTMLTextAreaElement> {
+  return useRefFormInputBase<HTMLTextAreaElement>(enterHandler, escapeHandler, allowsNewLine);
 }
 
 export function useRefInput(enterHandler?: () => void, escapeHandler?: () => void): RefInput<HTMLInputElement> {
   return useRefFormInputBase<HTMLInputElement>(enterHandler, escapeHandler);
 }
 
-function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(enterHandler?: () => void, escapeHandler?: () => void): RefInput<T> {
+function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(
+  enterHandler?: () => void, 
+  escapeHandler?: () => void,
+  allowsNewLine = false): RefInput<T> {
+
   const [value, setValue] = useState('');
   const [preEditValue, setPreEditValue] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<T>(null);
   let didConsumeEnterHandler = false;
 
   function onKeyDown(event: React.KeyboardEvent) {
-    if (event.key == 'Enter') {
-      enterHandler && enterHandler();
+    if (event.key == 'Enter' && !allowsNewLine) {
+      enterHandler?.();
       didConsumeEnterHandler = true;
 
       if (ref && ref.current) {
         ref.current.blur();
       }
     } else if (event.key == 'Escape') {
-      escapeHandler && escapeHandler();
+      escapeHandler?.();
       didConsumeEnterHandler = true;
 
       if (ref && ref.current) {
@@ -60,8 +67,7 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(e
   }
 
   function onBlur() {
-    // Interesting syntax, not sure how I feel about it yet
-    !didConsumeEnterHandler && enterHandler && enterHandler();
+    !didConsumeEnterHandler && enterHandler?.();
   }
 
   function adjustTextArea() {
@@ -100,6 +106,8 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(e
     value,
     setValue,
     preEditValue,
+    isEditing,
+    setIsEditing,
     domProps
   };
 }
