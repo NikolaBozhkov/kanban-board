@@ -24,12 +24,9 @@
     min-width: 0;
   }
 
-  .options-highlight, .options-container {
+  .options-highlight {
     position: absolute;
     display: none;
-  }
-
-  .options-highlight {
     width: $options-highlight-w;
     background-color: $highlight-color;
   }
@@ -63,43 +60,10 @@
   }
 
   .options-container {
-    @include drop-shadow;
-    z-index: 1;
+    @include options-container($border-r);
     $margin-left: 1rem;
     left: calc(100% + #{$margin-left});
     top: 0;
-    padding: 1rem;
-    background-color: lighten($bg-color, 7%);
-    border-radius: $border-r;
-    overflow: hidden;
-
-    &.is-active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .option-item {
-      @include clickable;
-      display: flex;
-      padding: 1rem;
-
-      .icon {
-        width: 1rem;
-        margin-right: 1.3rem;
-
-        .gg-trash {
-          margin-bottom: 0.3rem;
-        }
-      }
-
-      &.remove {
-        color: $no-inactive-color;
-
-        &:hover {
-          color: $no-color;
-        }
-      }
-    }
 
     .options-highlight {
       display: block;

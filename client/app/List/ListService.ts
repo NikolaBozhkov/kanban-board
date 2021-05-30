@@ -7,6 +7,7 @@ export interface IListService {
   add(title: string): Promise<IList>;
   delete(id: string): Promise<void>;
   update(id: string, title: string): Promise<IList>;
+  move(id: string, targetPosition: number): Promise<IList[]>;
 }
 
 export class ListService implements IListService {
@@ -31,5 +32,9 @@ export class ListService implements IListService {
 
   async update(id: string, title: string): Promise<IList> {
     return this.http.put('lists', { id, title });
+  }
+
+  async move(id: string, targetPosition: number): Promise<IList[]> {
+    return this.http.put('lists/move', { id, targetPosition });
   }
 }

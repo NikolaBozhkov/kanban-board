@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
@@ -10,12 +10,16 @@ import { useRefTextArea } from '../hooks/input-utils';
 
 type ListProps = {
   list: IPopulatedList
+  listsCount: number
 };
 
-export function List({ list }: ListProps): JSX.Element {
+export function List({ list, listsCount }: ListProps): JSX.Element {
   const history = useHistory();
   const { cardService, listService, boardStore } = useContext(DepsContext);
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isMoveActionOpen, setIsMoveActionOpen] = useState(false);
+  const moveActionRef = useRef<HTMLDivElement>(null);
+  const [moveTarget, setMoveTarget] = useState(list.position);
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [cards, setCards] = useState<JSX.Element[]>([]);
 
@@ -38,9 +42,28 @@ export function List({ list }: ListProps): JSX.Element {
   }
 
   async function handleClickRemove() {
+    setIsOptionsOpen(false);
+
     try {
       await listService.delete(list.id);
       boardStore.removeList(list.id);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function handleClickMove() {
+    setIsOptionsOpen(false);
+    setIsMoveActionOpen(true);
+  }
+
+  async function handleConfirmMove() {
+    setIsMoveActionOpen(false);
+    if (moveTarget == list.position) { return; }
+
+    try {
+      const updatedLists = await listService.move(list.id, moveTarget);
+      boardStore.updateLists(updatedLists);
     } catch (error) {
       console.log(error);
     }
@@ -93,15 +116,31 @@ export function List({ list }: ListProps): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
-  const actionsClassNames = classnames({
-    actions: true,
-    'actions-open': isActionsOpen
+  useEffect(() => {
+    function handleClick(event: Event) {
+      if (moveActionRef.current && !moveActionRef.current.contains(event.target as Node)) {
+        setIsMoveActionOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClick);
+    return () => { document.addEventListener('mousedown', handleClick); }
+  }, [moveActionRef]);
+
+  const optionsContainerClassNames = classnames({
+    'list-options-container': true,
+    'is-active': isOptionsOpen
   });
 
   const addCardClassNames = classnames({
     card: true,
     'add-card': true,
     'adding-card': isAddingCard
+  });
+
+  const moveActionContainerClassNames = classnames({
+    'move-action-container': true,
+    'is-active': isMoveActionOpen
   });
   
   return (
@@ -110,12 +149,27 @@ export function List({ list }: ListProps): JSX.Element {
         <div className="info-wrapper">
           <textarea { ...titleRef.domProps } className="title" />
           <Icon name="gg-math-plus" onClick={handleClickAddCard} />
-          <Icon name="gg-more-alt" onClick={() => setIsActionsOpen(!isActionsOpen)} />
-          <div className={actionsClassNames}>
-            <div className="action" onClick={handleClickRemove}>
+          <Icon name="gg-more-alt" onClick={() => setIsOptionsOpen(!isOptionsOpen)} />
+          <div className={optionsContainerClassNames}>
+            {/* <div className="options-highlight" /> */}
+            <div className="option-item" onClick={handleClickMove}>
+              <Icon name="gg-move-right" />
+              <span>Move</span>
+            </div>
+            <div className="option-item" onClick={handleClickRemove}>
               <Icon name="gg-trash" />
               <span>Remove</span>
             </div>
+          </div>
+          <div className={moveActionContainerClassNames} ref={moveActionRef}>
+            <div className="action-title">Move List</div>
+            <div className="select-container">
+              <span className="action-option">Position: {moveTarget}</span>
+              <select value={moveTarget} onChange={e => setMoveTarget(Number(e.target.value))}>
+                {Array.from(Array(listsCount).keys()).map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <Icon name="gg-check-o" className="confirm-icon" onClick={handleConfirmMove} />
           </div>
         </div>
         <div className="list-underline" />

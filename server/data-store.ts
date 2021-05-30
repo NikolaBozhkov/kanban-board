@@ -16,12 +16,15 @@ export function createCard(title: string, listId: string): ICard {
 }
 
 const defaultListTitles = ['To do', 'In progress', 'Done'];
-const defaultLists: IList[] = defaultListTitles.map((title) => { 
-  return { 
+const defaultLists = defaultListTitles.reduce((res, title, index) => { 
+  res.push({ 
     title, 
-    id: uuidv4()
-  };
-});
+    id: uuidv4(),
+    position: index
+  });
+
+  return res;
+}, new Array<IList>());
 
 defaultLists.forEach((list) => listsMap.set(list.id, list));
 

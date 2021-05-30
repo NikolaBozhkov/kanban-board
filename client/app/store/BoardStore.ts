@@ -5,6 +5,7 @@ import { getPopulatedLists } from '../../../shared/data-utils';
 
 enum Action {
   SetLists,
+  UpdateLists,
   AddList,
   UpdateList,
   RemoveList,
@@ -21,6 +22,16 @@ type SetListsAction = ReduxAction<Action> & {
 
 function createSetListsAction(lists: IPopulatedList[]): SetListsAction {
   return { type: Action.SetLists, lists };
+}
+
+// Set lists
+
+type UpdateListsAction = ReduxAction<Action> & {
+  lists: IList[]
+};
+
+function createUpdateListsAction(lists: IList[]): UpdateListsAction {
+  return { type: Action.UpdateLists, lists };
 }
 
 // Add list
@@ -85,7 +96,7 @@ const defaultState = {
 
 function boardReducer(state: BoardState = defaultState, action: ReduxAction<Action>): BoardState {
   function syncFromMaps(listsMap: Map<string, IList>, cardsMap: Map<string, ICard>): BoardState {
-    const lists = getPopulatedLists(listsMap, cardsMap);
+    const lists = getPopulatedLists(listsMap, cardsMap).sort((a, b) => a.position - b.position);
     return {
       listsMap,
       cardsMap,
@@ -105,13 +116,22 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
       cardsMap: Map<string, ICard>() 
     });
 
-    return { ...maps, lists };
+    const sortedLists = lists.sort((a, b) => a.position - b.position);
+
+    return { ...maps, lists: sortedLists };
   }
 
   switch (action.type) {
     case Action.SetLists: {
       const lists = (action as SetListsAction).lists;
       return syncFromPopulatedLists(lists);
+    }
+    case Action.UpdateLists: {
+      const lists = (action as UpdateListsAction).lists;
+      const listsMap = lists.reduce((res, list) => {
+        return res.set(list.id, list);
+      }, state.listsMap);
+      return syncFromMaps(listsMap, state.cardsMap);
     }
     case Action.AddList:
     case Action.UpdateList: {
@@ -166,6 +186,10 @@ export class BoardStore {
 
   setLists(lists: IPopulatedList[]): void {
     store.dispatch(createSetListsAction(lists));
+  }
+
+  updateLists(lists: IList[]): void {
+    store.dispatch(createUpdateListsAction(lists));
   }
 
   addList(list: IList): void {

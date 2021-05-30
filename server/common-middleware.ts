@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ICard, IList } from '../shared/data-types';
 import { cardsMap, listsMap } from './data-store';
-import { createError } from './helpers';
+import { badRequest, notFound } from './helpers';
 
 type Opt = {
   title?: string;
@@ -73,16 +73,4 @@ function mapRecordMiddlewareFactory(bodyKey: string, map: Map<string, unknown>) 
     res.locals.record = record;
     next();
   }
-}
-
-function badRequest(res: Response, error: string): Response {
-  return errorResponse(res, StatusCodes.BAD_REQUEST, error);
-}
-
-function notFound(res: Response, error: string): Response {
-  return errorResponse(res, StatusCodes.NOT_FOUND, error);
-}
-
-function errorResponse(res: Response, status: StatusCodes, error: string) {
-  return res.status(status).json(createError(error));
 }

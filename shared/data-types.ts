@@ -9,6 +9,7 @@ export interface ICard {
 export interface IList {
   title: string;
   id: string;
+  position: number;
 }
 
 export interface IPopulatedList extends IList {

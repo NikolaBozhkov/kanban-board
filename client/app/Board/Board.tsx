@@ -14,7 +14,7 @@ export function Board(): JSX.Element {
 
   useEffect(() => {
     const unsubscribeLists = boardStore.subscribeToLists(lists => {
-      setListComponents(lists.map((list) => <List list={list} key={list.id} />));
+      setListComponents(lists.map((list) => <List list={list} listsCount={lists.length} key={list.id} />));
     });
 
     return () => { unsubscribeLists() };

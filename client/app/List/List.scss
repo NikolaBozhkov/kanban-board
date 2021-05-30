@@ -44,37 +44,54 @@
     }
   }
 
-  .actions {
-    position: absolute;
+  .list-options-container, div[class*="action-container"] {
     right: 0;
     top: 100%;
-    background-color: #555;
-    padding: 1.5rem;
-    border-radius: 0.8rem;
-    display: none;
+  }
 
-    .action {
-      @include default-color-transition;
+  .list-options-container {
+    @include options-container(0.5rem);
+
+    .options-highlight {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0.5rem;
+      background-color: $highlight-color;
+    }
+  }
+
+  div[class*="action-container"] {
+    @include popup-container(0.5rem);
+    padding: 1.5rem 2rem;
+
+    .action-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: $highlight-color;
+    }
+
+    .select-container {
+      position: relative;
       display: flex;
-      
-      &:not(:last-child) {
-        margin-bottom: 1.3rem;
-      }
+      justify-content: center;
 
-      .icon {
-        margin-right: 1rem;
-        margin-bottom: 0.3rem;
-        transition: none;
-      }
-
-      &:hover {
-        color: $highlight-color;
+      select {
+        position: absolute;
+        opacity: 0;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
         cursor: pointer;
       }
     }
 
-    &.actions-open {
-      display: block;
+    .confirm-icon {
+      @include clickable;
+      margin-top: 1.5rem;
+      --ggs: 1.3;
     }
   }
 

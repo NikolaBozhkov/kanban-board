@@ -44,3 +44,45 @@
   align-items: center;
   justify-content: center;
 }
+
+@mixin popup-container($border-r) {
+  @include drop-shadow;
+  z-index: 1;
+  padding: 1rem;
+  background-color: $options-bg;
+  border-radius: $border-r;
+  overflow: hidden;
+  position: absolute;
+  display: none;
+
+  &.is-active {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@mixin options-container($border-r) {
+  @include popup-container($border-r);
+  .option-item {
+    @include clickable;
+    display: flex;
+    padding: 1rem;
+
+    .icon {
+      width: 1rem;
+      margin-right: 1.3rem;
+
+      .gg-trash {
+        margin-bottom: 0.3rem;
+      }
+    }
+
+    &.remove {
+      color: $no-inactive-color;
+
+      &:hover {
+        color: $no-color;
+      }
+    }
+  }
+}
