@@ -5,7 +5,12 @@ import { DepsContext } from '../App';
 import { Icon } from '../Icon';
 import './Card.scss';
 
-export function Card(card: ICard): JSX.Element {
+type CardProps = {
+  card: ICard,
+  onClick: React.MouseEventHandler
+}
+
+export function Card({ card, onClick }: CardProps): JSX.Element {
   const { cardService } = useContext(DepsContext);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -15,7 +20,8 @@ export function Card(card: ICard): JSX.Element {
   const optionsContainer = useRef<HTMLDivElement | null>(null);
 
   // Toggles options open if not coming from blur, otherwise clears the flag
-  function handleClickOptions() {
+  function handleClickOptions(event: React.MouseEvent) {
+    event.stopPropagation();
     if (!didOptionsCloseOnBlur) {
       setIsOptionsOpen(!isOptionsOpen);
     } else {
@@ -54,13 +60,13 @@ export function Card(card: ICard): JSX.Element {
   });
 
   return (
-    <div className="card">
+    <div className="card" onClick={onClick}>
       <span className="title">{card.title}</span>
       <div className="options">
         <Icon name="gg-more-vertical-alt" className={optionsIconClassNames} onClick={handleClickOptions} />
         <div className="options-highlight" />
       </div>
-      <div className={optionsContainerClassNames} ref={optionsContainer} onBlur={handleOptionsContainerBlur} tabIndex={0}>
+      <div className={optionsContainerClassNames} ref={optionsContainer} onBlur={handleOptionsContainerBlur} tabIndex={0} onClick={e => e.stopPropagation()}>
         <div className="options-highlight" />
         <span className="option-item"><Icon name="gg-duplicate" />Copy</span>
         <span className="option-item remove" onClick={handleClickRemove}><Icon name="gg-trash" />Remove</span>

@@ -13,8 +13,6 @@ type RefInput<T> = {
   value: string,
   setValue: React.Dispatch<React.SetStateAction<string>>;
   preEditValue: string;
-  isEditing: boolean;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   domProps: RefInputDomProps<T>; 
 };
 
@@ -26,6 +24,15 @@ export function useRefInput(enterHandler?: () => void, escapeHandler?: () => voi
   return useRefFormInputBase<HTMLInputElement>(enterHandler, escapeHandler);
 }
 
+/**
+ * Hook that allows input or text area to handle enter and escape events.
+ * enterHandler is also called on blur unless it happens from escape.
+ * Escape key also reverts the value to the pre-edited one.
+ * @param enterHandler The handler to call when pressing 'Enter' or onBlur(except from escape) 
+ * @param escapeHandler The handler to call when pressing 'Escape'
+ * @param allowsNewLine If 'Enter' is consumed as text
+ * @returns state properties and domProps that can be attached directly to the HTML element
+ */
 function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(
   enterHandler?: () => void, 
   escapeHandler?: () => void,
@@ -33,7 +40,6 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(
 
   const [value, setValue] = useState('');
   const [preEditValue, setPreEditValue] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
   const ref = useRef<T>(null);
   let didConsumeEnterHandler = false;
 
@@ -106,8 +112,6 @@ function useRefFormInputBase<T extends HTMLInputElement | HTMLTextAreaElement>(
     value,
     setValue,
     preEditValue,
-    isEditing,
-    setIsEditing,
     domProps
   };
 }

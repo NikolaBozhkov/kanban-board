@@ -1,4 +1,4 @@
-import { Action as ReduxAction, createStore } from 'redux';
+import { Action as ReduxAction, createStore, Unsubscribe } from 'redux';
 import { Map } from 'immutable';
 import { IPopulatedList, IList, ICard } from '../../../shared/data-types';
 import { getPopulatedLists } from '../../../shared/data-utils';
@@ -131,8 +131,8 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
 const store = createStore(boardReducer, defaultState);
 
 export class BoardStore {
-  subscribeToLists(callback: (lists: IPopulatedList[]) => void): void {
-    store.subscribe(() => {
+  subscribeToLists(callback: (lists: IPopulatedList[]) => void): Unsubscribe {
+    return store.subscribe(() => {
       callback(store.getState().lists);
     });
   }

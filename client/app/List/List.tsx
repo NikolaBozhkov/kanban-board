@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
 import { Icon } from '../Icon';
@@ -12,6 +13,7 @@ type ListProps = {
 };
 
 export function List({ list }: ListProps): JSX.Element {
+  const history = useHistory();
   const { cardService, listService, boardStore } = useContext(DepsContext);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isAddingCard, setIsAddingCard] = useState(false);
@@ -86,8 +88,7 @@ export function List({ list }: ListProps): JSX.Element {
 
   // Create cards components from list
   useEffect(() => {
-    console.log(list.cards.map(c => c.id));
-    setCards(list.cards.map(card => <Card {...card} key={card.id} />));
+    setCards(list.cards.map(card => <Card key={card.id} card={card} onClick={() => history.push(`/card/${card.id}`)} />));
     titleRef.setValue(list.title);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
