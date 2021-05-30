@@ -9,17 +9,18 @@ import './CardDetails.scss';
 export function CardDetails(): JSX.Element {
   const [card, setCard] = useState<ICard | null>(null);
   const [list, setList] = useState<IList | null>(null);
-  const { id } = useParams<{id: string}>();
+  const { id } = useParams<{ id: string }>();
   const { boardStore, cardService } = useContext(DepsContext);
 
-  const titleRefInput = useRefTextArea(
+  const cardTitle = useRefTextArea(
     async function enterHandler() {
       if (!card) { return; }
 
       try {
-        const updatedCard = await cardService.update(card.id, { title: titleRefInput.value });
+        const updatedCard = await cardService.update(card.id, { title: cardTitle.value });
         boardStore.updateCard(updatedCard);
       } catch (error) {
+        cardTitle.setValue(card.title);
         console.log(error);
       }
     }
@@ -31,9 +32,9 @@ export function CardDetails(): JSX.Element {
     if (cardDetails) {
       setCard(cardDetails.card);
       setList(cardDetails.list);
-      titleRefInput.setValue(cardDetails.card.title);
+      cardTitle.setValue(cardDetails.card.title);
     }
-  }, [boardStore, id, titleRefInput]);
+  }, [boardStore, id, cardTitle]);
 
   // Fetch the card details from store on mount
   useEffect(() => {
@@ -53,7 +54,7 @@ export function CardDetails(): JSX.Element {
           <div className="section">
             <Icon name="gg-calendar-two" />
             <div>
-              <textarea className="title" { ...titleRefInput.domProps } />
+              <textarea className="title" { ...cardTitle.domProps } />
               <div>in list&nbsp;<span className="list-title">{list.title}</span></div>
             </div>
           </div>

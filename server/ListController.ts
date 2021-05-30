@@ -3,16 +3,16 @@ import * as core from 'express-serve-static-core';
 import { Controller, Get, Post, Delete, Put, Middleware } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
-import { listsMap, cardsMap } from '../data-store';
-import { getPopulatedLists } from '../../shared/data-utils';
-import { IList } from '../../shared/data-types';
-import { TitleRecord, titleMiddleware, ListRecord, listByIdMiddleware } from './list-middleware';
+import { listsMap, cardsMap } from './data-store';
+import { getPopulatedLists } from '../shared/data-utils';
+import { IList } from '../shared/data-types';
+import { TitleRecord, titleMiddlewareFactory, ListRecord, listByIdMiddlewareFactory } from './common-middleware';
 
 @Controller('api/lists')
 export class ListController {
   
   @Post()
-  @Middleware(titleMiddleware)
+  @Middleware(titleMiddlewareFactory())
   add(req: Request, res: Response<IList, TitleRecord>) {
     const title = res.locals.title;
     const id = uuidv4();
@@ -23,7 +23,10 @@ export class ListController {
   }
 
   @Put()
-  @Middleware([titleMiddleware, listByIdMiddleware])
+  @Middleware([
+    titleMiddlewareFactory(), 
+    ...listByIdMiddlewareFactory('id')
+  ])
   update(req: Request, res: Response<IList, TitleRecord & ListRecord>) {
     const list = res.locals.list;
     const title = res.locals.title;
@@ -33,7 +36,7 @@ export class ListController {
   }
 
   @Delete()
-  @Middleware(listByIdMiddleware)
+  @Middleware(listByIdMiddlewareFactory('id'))
   remove(req: Request, res: Response<void, ListRecord>) {
     const id = res.locals.list.id;
     listsMap.delete(id);

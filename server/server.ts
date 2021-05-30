@@ -4,7 +4,7 @@ import cors from 'cors';
 import { Server } from '@overnightjs/core';
 import { UserController } from './UserController';
 import { CardController } from './CardController';
-import { ListController } from './List/ListController';
+import { ListController } from './ListController';
 
 const userController = new UserController();
 const cardController = new CardController();
