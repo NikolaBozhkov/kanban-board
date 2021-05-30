@@ -17,7 +17,7 @@ export class ListController {
     const title = res.locals.title;
     const id = uuidv4();
 
-    listsMap.set(id, { title, id, position: listsMap.keys.length });
+    listsMap.set(id, { title, id, position: listsMap.size });
 
     res.status(StatusCodes.CREATED).json(listsMap.get(id));
   }

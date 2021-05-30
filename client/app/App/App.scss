@@ -7,7 +7,9 @@ $divider-width: 1px;
 .lists {
   display: flex;
   align-items: flex-start;
-  padding-top: 2rem;
+  padding: 2rem 0rem;
+  padding-right: 4rem;
+  overflow: auto;
 
   & > * {
     flex-shrink: 0;

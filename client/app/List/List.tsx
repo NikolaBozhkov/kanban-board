@@ -114,6 +114,7 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
   useEffect(() => {
     setCards(list.cards.map(card => <Card key={card.id} card={card} onClick={() => history.push(`/card/${card.id}`)} />));
     titleRef.setValue(list.title);
+    setMoveTarget(list.position);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
@@ -158,7 +159,10 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
             <div className="select-container">
               <span className="action-option">Position: {moveTarget}</span>
               <select value={moveTarget} onChange={e => setMoveTarget(Number(e.target.value))}>
-                {Array.from(Array(listsCount).keys()).map(p => <option key={p} value={p}>{p}</option>)}
+                {Array.from(Array(listsCount).keys()).map(p => {
+                  const optionText = `${p}${list.position == p ? ' (current)' : ''}`;
+                  return <option key={p} value={p}>{optionText}</option>;
+                })}
               </select>
             </div>
             <Icon name="gg-check-o" className="confirm-icon" onClick={handleConfirmMove} />

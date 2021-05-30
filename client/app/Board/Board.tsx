@@ -14,6 +14,7 @@ export function Board(): JSX.Element {
 
   useEffect(() => {
     const unsubscribeLists = boardStore.subscribeToLists(lists => {
+      console.log(lists);
       setListComponents(lists.map((list) => <List list={list} listsCount={lists.length} key={list.id} />));
     });
 
@@ -38,6 +39,7 @@ export function Board(): JSX.Element {
 
     try {
       const newList = await listService.add(title);
+      console.log(newList);
       boardStore.addList(newList);
       setIsAddingList(false);
       addListInput.current.value = '';

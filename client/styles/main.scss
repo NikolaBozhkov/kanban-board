@@ -1,6 +1,15 @@
 @import './variables.scss';
 @import './mixins.scss';
 
+body, html, #root {
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  display: flex;
+}
+
 html {
   font-size: 62.5%;
   
