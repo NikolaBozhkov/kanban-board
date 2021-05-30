@@ -107,9 +107,9 @@ export function CardDetails(): JSX.Element {
           </div>
           <div className="section">
             <Icon name="gg-notes"/>
-            <div>
+            <div className="grow">
               <h1>Description:</h1>
-              <div>
+              <div className="description-edit-wrapper">
                 <textarea { ...cardDescription.domProps } onFocus={handleCardDescriptionFocus} />
                 {isEditingDescription &&
                   <div>

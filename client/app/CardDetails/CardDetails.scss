@@ -29,6 +29,10 @@
       display: flex;
       align-items: flex-start;
       margin-bottom: 3rem;
+
+      .grow {
+        flex-grow: 1;
+      }
       
       & > .icon, h1, .title {
         color: mix(#fff, $accent-color, 30%);
@@ -69,7 +73,16 @@
       .icon {
         margin-right: 1rem;
         --ggs: 0.7;
+
+        .gg-pen {
+          margin-bottom: 0.2rem;
+        }
       }
+    }
+
+    .description-edit-wrapper {
+      display: flex;
+      flex-direction: column;
     }
   }
 }
