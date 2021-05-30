@@ -1,7 +1,8 @@
 import classnames from 'classnames';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { ICard } from '../../../shared/data-types';
 import { DepsContext } from '../App';
+import { useOutsideClickHandler } from '../hooks/common-hooks';
 import { Icon } from '../Icon';
 import './Card.scss';
 
@@ -14,29 +15,31 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
   const { cardService, boardStore } = useContext(DepsContext);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
-  // Flag for not opening the options immediately after losing focus and clicking on the options button again
-  const [didOptionsCloseOnBlur, setDidOptionsCloseOnBlur] = useState(false);
+  // Flag for not opening the options immediately after closing by clicking on the options button again
+  const [didOptionsJustClose, setdidOptionsJustClose] = useState(false);
 
   const optionsContainer = useRef<HTMLDivElement | null>(null);
+
+  useOutsideClickHandler(() => {
+    if (!isOptionsOpen) { return; }
+
+    setIsOptionsOpen(false);
+    setdidOptionsJustClose(true);
+
+    // Clear flag after a safe delay after handleClickOptions
+    setTimeout(() => {
+      setdidOptionsJustClose(false);
+    }, 300);
+  }, optionsContainer);
 
   // Toggles options open if not coming from blur, otherwise clears the flag
   function handleClickOptions(event: React.MouseEvent) {
     event.stopPropagation();
-    if (!didOptionsCloseOnBlur) {
-      setIsOptionsOpen(!isOptionsOpen);
+    if (!didOptionsJustClose) {
+      setIsOptionsOpen(true);
     } else {
-      setDidOptionsCloseOnBlur(false);
+      setdidOptionsJustClose(false);
     }
-  }
- 
-  function handleOptionsContainerBlur() {
-    setIsOptionsOpen(false);
-    setDidOptionsCloseOnBlur(true);
-
-    // Clear flag after a safe delay after handleClickOptions
-    setTimeout(() => {
-      setDidOptionsCloseOnBlur(false);
-    }, 300);
   }
 
   async function handleClickRemove() {
@@ -47,14 +50,6 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
       console.log(error);
     }
   }
-
-  useEffect(() => {
-    if (optionsContainer.current == null) { return; }
-
-    if (isOptionsOpen) {
-      optionsContainer.current.focus();
-    }
-  }, [isOptionsOpen]);
 
   const optionsIconClassNames = classnames({
     'is-active': isOptionsOpen
@@ -72,7 +67,7 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
         <Icon name="gg-more-vertical-alt" className={optionsIconClassNames} onClick={handleClickOptions} />
         <div className="options-highlight" />
       </div>
-      <div className={optionsContainerClassNames} ref={optionsContainer} onBlur={handleOptionsContainerBlur} tabIndex={0} onClick={e => e.stopPropagation()}>
+      <div className={optionsContainerClassNames} ref={optionsContainer} onClick={e => e.stopPropagation()}>
         <div className="options-highlight" />
         <span className="option-item"><Icon name="gg-duplicate" />Copy</span>
         <span className="option-item remove" onClick={handleClickRemove}><Icon name="gg-trash" />Remove</span>

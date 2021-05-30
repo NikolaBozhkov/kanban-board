@@ -2,7 +2,8 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from 'rea
 import { useParams, useHistory } from 'react-router-dom';
 import { ActionType, ICard, IList } from '../../../shared/data-types';
 import { DepsContext } from '../App';
-import { useRefTextArea } from '../hooks/input-utils';
+import { useOutsideClickHandler } from '../hooks/common-hooks';
+import { useRefTextArea } from '../hooks/input-hooks';
 import { Icon } from '../Icon';
 import './CardDetails.scss';
 
@@ -97,17 +98,7 @@ export function CardDetails(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardStore]);
 
-  useEffect(() => {
-    // Dismiss if click outside
-    function handleClick(event: MouseEvent) {
-      if (cardDetailsRef.current && !cardDetailsRef.current.contains(event.target as Node)) {
-        history.push('/');
-      }
-    }
-
-    document.addEventListener('mousedown', handleClick);
-    return () => { document.removeEventListener('mousedown', handleClick) };
-  }, [cardDetailsRef, history]);
+  useOutsideClickHandler(() => history.push('/'), cardDetailsRef);
 
   if (card && list) {
     return (

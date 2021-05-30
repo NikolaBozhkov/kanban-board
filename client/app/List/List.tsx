@@ -3,10 +3,11 @@ import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
 import { Icon } from '../Icon';
-import './List.scss';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
-import { useRefTextArea } from '../hooks/input-utils';
+import { useRefTextArea } from '../hooks/input-hooks';
+import { useOutsideClickHandler } from '../hooks/common-hooks';
+import './List.scss';
 
 type ListProps = {
   list: IPopulatedList
@@ -116,16 +117,7 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
-  useEffect(() => {
-    function handleClick(event: Event) {
-      if (moveActionRef.current && !moveActionRef.current.contains(event.target as Node)) {
-        setIsMoveActionOpen(false);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClick);
-    return () => { document.addEventListener('mousedown', handleClick); }
-  }, [moveActionRef]);
+  useOutsideClickHandler(() => setIsMoveActionOpen(false), moveActionRef);
 
   const optionsContainerClassNames = classnames({
     'list-options-container': true,
