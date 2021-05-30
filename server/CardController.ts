@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { Controller, Middleware, Post, Put } from '@overnightjs/core';
+import { Controller, Delete, Middleware, Post, Put } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
 import { cardsMap, createCard } from './data-store';
-import { createError } from './helpers';
 import { ActionType } from '../shared/data-types';
 import { cardByIdMiddlewareFactory, CardRecord, listByIdMiddlewareFactory, ListRecord, titleMiddlewareFactory, TitleRecord } from './common-middleware';
 
@@ -69,7 +68,12 @@ export class CardController {
     return res.status(StatusCodes.OK).json(card);
   }
 
-  private errorResponseEmptyTitle(res: Response): Response {
-    return res.status(StatusCodes.BAD_REQUEST).json(createError('Title cannot be empty'));
+  @Delete()
+  @Middleware(cardByIdMiddlewareFactory('id'))
+  delete(req: Request, res: Response<any, CardRecord>) {
+    const card = res.locals.card;
+    cardsMap.delete(card.id);
+
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }

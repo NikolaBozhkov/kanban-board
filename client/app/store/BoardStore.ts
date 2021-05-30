@@ -9,7 +9,8 @@ enum Action {
   UpdateList,
   RemoveList,
   AddCard,
-  UpdateCard
+  UpdateCard,
+  RemoveCard
 }
 
 // Set lists
@@ -40,11 +41,11 @@ function createUpdateListAction(list: IList): ListAction {
 
 // Remove list
 
-type RemoveListAction = ReduxAction<Action> & {
+type IdAction = ReduxAction<Action> & {
   id: string
 };
 
-function createRemoveListAction(id: string): RemoveListAction {
+function createRemoveListAction(id: string): IdAction {
   return { type: Action.RemoveList, id };
 }
 
@@ -62,6 +63,12 @@ function createAddCardAction(card: ICard): CardAction {
 
 function createUpdateCardAction(card: ICard): CardAction {
   return { type: Action.UpdateCard, card };
+}
+
+// Remove card
+
+function createRemoveCardAction(id: string): IdAction {
+  return { type: Action.RemoveCard, id };
 }
 
 type BoardState = {
@@ -113,14 +120,19 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
       return syncFromMaps(listsMap, state.cardsMap);
     }
     case Action.RemoveList: {
-      const id = (action as RemoveListAction).id;
-      const lists = state.lists.filter(list => list.id != id);
-      return syncFromPopulatedLists(lists);
+      const id = (action as IdAction).id;
+      const listsMap = state.listsMap.delete(id);
+      return syncFromMaps(listsMap, state.cardsMap);
     }
     case Action.AddCard:
     case Action.UpdateCard: {
       const card = (action as CardAction).card;
       const cardsMap = state.cardsMap.set(card.id, card);
+      return syncFromMaps(state.listsMap, cardsMap);
+    }
+    case Action.RemoveCard: {
+      const id = (action as IdAction).id;
+      const cardsMap = state.cardsMap.delete(id);
       return syncFromMaps(state.listsMap, cardsMap);
     }
     default:
@@ -174,5 +186,9 @@ export class BoardStore {
 
   updateCard(card: ICard): void {
     store.dispatch(createUpdateCardAction(card));
+  }
+
+  removeCard(id: string): void {
+    store.dispatch(createRemoveCardAction(id));
   }
 }

@@ -11,7 +11,7 @@ type CardProps = {
 }
 
 export function Card({ card, onClick }: CardProps): JSX.Element {
-  const { cardService } = useContext(DepsContext);
+  const { cardService, boardStore } = useContext(DepsContext);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   // Flag for not opening the options immediately after losing focus and clicking on the options button again
@@ -39,7 +39,13 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
     }, 300);
   }
 
-  function handleClickRemove() {
+  async function handleClickRemove() {
+    try {
+      await cardService.delete(card.id);
+      boardStore.removeCard(card.id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {

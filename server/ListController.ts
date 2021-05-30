@@ -37,7 +37,7 @@ export class ListController {
 
   @Delete()
   @Middleware(listByIdMiddlewareFactory('id'))
-  remove(req: Request, res: Response<void, ListRecord>) {
+  delete(req: Request, res: Response<void, ListRecord>) {
     const id = res.locals.list.id;
     listsMap.delete(id);
 
