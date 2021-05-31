@@ -100,7 +100,6 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
       <div className={optionsContainerClassNames} ref={optionsContainer.containerRef}>
         <div className="options-highlight" />
         <span className="option-item" onClick={openMoveAction}><Icon name="gg-move-right" />Move</span>
-        <span className="option-item"><Icon name="gg-duplicate" />Copy</span>
         <span className="option-item remove" onClick={handleClickRemove}><Icon name="gg-trash" />Remove</span>
       </div>
       <div className={moveActionContainerClassNames} ref={moveActionContainer.containerRef}>
