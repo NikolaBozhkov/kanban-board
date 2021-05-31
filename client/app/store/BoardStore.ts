@@ -1,7 +1,7 @@
 import { Action as ReduxAction, createStore, Unsubscribe } from 'redux';
 import { Map } from 'immutable';
 import { IPopulatedList, IList, ICard } from '../../../shared/data-types';
-import { getCards, getPopulatedLists } from '../../../shared/data-utils';
+import { getPopulatedLists } from '../../../shared/data-utils';
 
 enum Action {
   SetLists,

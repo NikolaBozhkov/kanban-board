@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import React, { useContext, useEffect, useState, MouseEvent } from 'react';
-import { ICard, IList, IPopulatedList } from '../../../shared/data-types';
+import { ICard, IPopulatedList } from '../../../shared/data-types';
 import { DepsContext } from '../App';
 import { useHiddenContainer } from '../hooks/common-hooks';
 import { Icon } from '../Icon';
@@ -107,7 +107,7 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
         <div className="action-title">Move Card</div>
         <div className="select-container">
           <span className="action-option">List: {moveListTarget?.title}</span>
-          <select value={moveListId} onChange={e => setMoveListId(e.target.value)} onClick={e => console.log(lists)}>
+          <select value={moveListId} onChange={e => setMoveListId(e.target.value)}>
             {lists.map(list => {
               const optionText = `${list.title}${card.listId == list.id ? ' (current)' : ''}`;
               return <option key={list.id} value={list.id}>{optionText}</option>;

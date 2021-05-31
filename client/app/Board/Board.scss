@@ -4,6 +4,11 @@
 $add-icon-width: 5rem;
 $divider-width: 1px;
 
+.board-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .filter-container input {
   background-color: lighten($bg-color, 10%);
   padding: 1rem;
@@ -12,6 +17,7 @@ $divider-width: 1px;
 }
 
 .lists {
+  flex-grow: 1;
   display: flex;
   align-items: flex-start;
   padding: 2rem 0rem;
