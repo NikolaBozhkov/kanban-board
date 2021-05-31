@@ -3,8 +3,7 @@
 ## Running the project
 I recommend running it using `npm run dev` and going to `localhost:5000`
 
-You can run it as a production build using `npm run build:client` -> `npm run build:server` -> `npm start`.
-But I didn't have time to properly test it at the end, so the asset size is a bit big, which causes load lag and there seems to be a problem with some of the colors being washed out.
+You can run it as a production build using `npm run build:client` -> `npm run build:server` -> `npm start`
 
 ## Remarks
 My approach was to focus on scalability and general solutions, which combined with my 0 experience with modern React ended up eating most of my time. 
