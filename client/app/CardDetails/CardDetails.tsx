@@ -115,7 +115,7 @@ export function CardDetails(): JSX.Element {
           <div className="section">
             <Icon name="gg-notes"/>
             <div className="grow">
-              <h1>Description:</h1>
+              <h1>Description</h1>
               <div className="description-edit-wrapper">
                 <textarea { ...cardDescription.domProps } onFocus={handleCardDescriptionFocus} placeholder="Add description..." />
                 {isEditingDescription &&
@@ -130,7 +130,7 @@ export function CardDetails(): JSX.Element {
           <div className="section">
             <Icon name="gg-time" />
             <div>
-              <h1>Activity:</h1>
+              <h1>Activity</h1>
               <div>
                 {card.history.map((action, i) => {
                   let iconName = '';
@@ -157,6 +157,6 @@ export function CardDetails(): JSX.Element {
     );
   } else {
     // Loading or error msg
-    return <div>Card not loaded</div>;
+    return <div></div>;
   }
 }

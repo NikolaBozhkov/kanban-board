@@ -51,6 +51,7 @@
 
   .list-options-container {
     @include options-container(0.5rem);
+    z-index: 2;
 
     .options-highlight {
       position: absolute;
@@ -64,6 +65,7 @@
 
   div[class*="action-container"] {
     @include popup-container(0.5rem);
+    z-index: 2;
     padding: 1.5rem 2rem;
 
     .action-title {

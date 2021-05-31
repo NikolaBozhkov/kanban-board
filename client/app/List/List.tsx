@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import { IPopulatedList } from '../../../shared/data-types';
@@ -6,7 +6,7 @@ import { Icon } from '../Icon';
 import { Card } from '../Card';
 import { DepsContext } from '../App';
 import { useRefTextArea } from '../hooks/input-hooks';
-import { useOutsideClickHandler } from '../hooks/common-hooks';
+import { useHiddenContainer } from '../hooks/common-hooks';
 import './List.scss';
 
 type ListProps = {
@@ -17,9 +17,10 @@ type ListProps = {
 export function List({ list, listsCount }: ListProps): JSX.Element {
   const history = useHistory();
   const { cardService, listService, boardStore } = useContext(DepsContext);
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [isMoveActionOpen, setIsMoveActionOpen] = useState(false);
-  const moveActionRef = useRef<HTMLDivElement>(null);
+
+  const optionsContainer = useHiddenContainer<HTMLDivElement, HTMLSpanElement>();
+  const moveActionContainer = useHiddenContainer<HTMLDivElement, HTMLDivElement>();
+
   const [moveTarget, setMoveTarget] = useState(list.position);
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [cards, setCards] = useState<JSX.Element[]>([]);
@@ -38,13 +39,7 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
     }
   );
 
-  function handleClickAddCard() {
-    setIsAddingCard(true);
-  }
-
   async function handleClickRemove() {
-    setIsOptionsOpen(false);
-
     try {
       await listService.delete(list.id);
       boardStore.removeList(list.id);
@@ -53,13 +48,8 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
     }
   }
 
-  async function handleClickMove() {
-    setIsOptionsOpen(false);
-    setIsMoveActionOpen(true);
-  }
-
   async function handleConfirmMove() {
-    setIsMoveActionOpen(false);
+    moveActionContainer.setIsOpen(false);
     if (moveTarget == list.position) { return; }
 
     try {
@@ -118,11 +108,9 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list]);
 
-  useOutsideClickHandler(() => setIsMoveActionOpen(false), moveActionRef);
-
   const optionsContainerClassNames = classnames({
     'list-options-container': true,
-    'is-active': isOptionsOpen
+    'is-active': optionsContainer.isOpen
   });
 
   const addCardClassNames = classnames({
@@ -133,7 +121,7 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
 
   const moveActionContainerClassNames = classnames({
     'move-action-container': true,
-    'is-active': isMoveActionOpen
+    'is-active': moveActionContainer.isOpen
   });
   
   return (
@@ -141,20 +129,20 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
       <div className="header">
         <div className="info-wrapper">
           <textarea { ...titleRef.domProps } className="title" />
-          <Icon name="gg-math-plus" onClick={handleClickAddCard} />
-          <Icon name="gg-more-alt" onClick={() => setIsOptionsOpen(!isOptionsOpen)} />
-          <div className={optionsContainerClassNames}>
+          <Icon name="gg-math-plus" onClick={() => setIsAddingCard(true)} />
+          <Icon name="gg-more-alt" ref={optionsContainer.btnRef} />
+          <div className={optionsContainerClassNames} ref={optionsContainer.containerRef}>
             {/* <div className="options-highlight" /> */}
-            <div className="option-item" onClick={handleClickMove}>
+            <div className="option-item" ref={moveActionContainer.btnRef} onClick={() => optionsContainer.setIsOpen(false)}>
               <Icon name="gg-move-right" />
               <span>Move</span>
             </div>
-            <div className="option-item" onClick={handleClickRemove}>
+            <div className="option-item remove" onClick={handleClickRemove}>
               <Icon name="gg-trash" />
               <span>Remove</span>
             </div>
           </div>
-          <div className={moveActionContainerClassNames} ref={moveActionRef}>
+          <div className={moveActionContainerClassNames} ref={moveActionContainer.containerRef}>
             <div className="action-title">Move List</div>
             <div className="select-container">
               <span className="action-option">Position: {moveTarget}</span>
