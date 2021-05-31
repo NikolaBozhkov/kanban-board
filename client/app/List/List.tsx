@@ -11,10 +11,11 @@ import './List.scss';
 
 type ListProps = {
   list: IPopulatedList
-  listsCount: number
+  listsCount: number,
+  filter: string
 };
 
-export function List({ list, listsCount }: ListProps): JSX.Element {
+export function List({ list, listsCount, filter }: ListProps): JSX.Element {
   const history = useHistory();
   const { cardService, listService, boardStore } = useContext(DepsContext);
 
@@ -103,11 +104,17 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
 
   // Create cards components from list
   useEffect(() => {
-    setCards(list.cards.map(card => <Card key={card.id} card={card} onClick={() => history.push(`/card/${card.id}`)} />));
+    const cardComponents = list.cards.filter(card => {
+      return card.title.includes(filter);
+    }).map(card => {
+      return <Card key={card.id} card={card} onClick={() => history.push(`/card/${card.id}`)} />
+    });
+
+    setCards(cardComponents);
     titleRef.setValue(list.title);
     setMoveTarget(list.position);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list]);
+  }, [list, filter]);
 
   const optionsContainerClassNames = classnames({
     'list-options-container': true,

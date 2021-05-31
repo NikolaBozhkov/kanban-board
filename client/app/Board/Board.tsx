@@ -4,22 +4,30 @@ import classnames from 'classnames';
 import { DepsContext } from '../App';
 import { List } from '../List';
 import { Icon } from '../Icon';
+import { useRefInput } from '../hooks/input-hooks';
+import './Board.scss';
+import { IPopulatedList } from '../../../shared/data-types';
 
 export function Board(): JSX.Element {
   const { listService, boardStore } = useContext(DepsContext);
-
+  const [lists, setLists] = useState<IPopulatedList[]>([]);
   const [isAddingList, setIsAddingList] = useState(false);
   const addListInput = useRef<HTMLInputElement | null>(null);
   const [listComponents, setListComponents] = useState<JSX.Element[]>([]);
 
+  const filterInput = useRefInput();
+
   useEffect(() => {
     const unsubscribeLists = boardStore.subscribeToPopulatedLists(lists => {
-      console.log(lists);
-      setListComponents(lists.map((list) => <List list={list} listsCount={lists.length} key={list.id} />));
+      setLists(lists);
     });
 
     return () => unsubscribeLists();
-  }, [boardStore]);
+  }, [boardStore, filterInput.value]);
+
+  useEffect(() => {
+    setListComponents(lists.map((list) => <List list={list} listsCount={lists.length} filter={filterInput.value} key={list.id} />));
+  }, [lists, filterInput.value]);
 
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key == 'Enter') {
@@ -76,20 +84,25 @@ export function Board(): JSX.Element {
   });
 
   return (
-    <div className="lists">
-      {listComponents}
-      <div className={addListClassNames}>
-        <div className="header">
-          <input type="text" placeholder="Enter list title..." ref={addListInput} onKeyDown={handleKeyDown} />
-          {isAddingList &&
-            <Fragment>
-              <Icon name="gg-check" onClick={addList} className="confirm-add-icon" />
-              <span className="divider" />
-            </Fragment>
-          }
-          <Icon name="gg-math-plus" onClick={() => setIsAddingList(!isAddingList)} className="add-toggle-icon" />
+    <div className="board-container">
+      <div className="filter-container">
+        <input type="text" {...filterInput.domProps} placeholder="Filter by title..." />
+      </div>
+      <div className="lists">
+        {listComponents}
+        <div className={addListClassNames}>
+          <div className="header">
+            <input type="text" placeholder="Enter list title..." ref={addListInput} onKeyDown={handleKeyDown} />
+            {isAddingList &&
+              <Fragment>
+                <Icon name="gg-check" onClick={addList} className="confirm-add-icon" />
+                <span className="divider" />
+              </Fragment>
+            }
+            <Icon name="gg-math-plus" onClick={() => setIsAddingList(!isAddingList)} className="add-toggle-icon" />
+          </div>
+          <div className="list-underline" />
         </div>
-        <div className="list-underline" />
       </div>
     </div>
   );

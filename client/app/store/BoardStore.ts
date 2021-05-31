@@ -91,7 +91,7 @@ type BoardState = {
 const defaultState = { 
   listsMap: Map<string, IList>(), 
   cardsMap: Map<string, ICard>(), 
-  lists: [] 
+  lists: []
 };
 
 function boardReducer(state: BoardState = defaultState, action: ReduxAction<Action>): BoardState {

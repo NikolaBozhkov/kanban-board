@@ -4,6 +4,10 @@
 $add-icon-width: 5rem;
 $divider-width: 1px;
 
+.filter-container {
+  background-color: lighten($bg-color, 10%);
+}
+
 .lists {
   display: flex;
   align-items: flex-start;
