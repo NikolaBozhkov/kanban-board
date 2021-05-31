@@ -23,8 +23,8 @@ export function Card({ card, onClick }: CardProps): JSX.Element {
 
   async function handleClickRemove() {
     try {
-      await cardService.delete(card.id);
-      boardStore.removeCard(card.id);
+      const updatedLists = await cardService.delete(card.id);
+      boardStore.setLists(updatedLists);
     } catch (error) {
       console.log(error);
     }

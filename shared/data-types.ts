@@ -35,6 +35,11 @@ export interface IEditAction extends IAction {
   prevDescription?: string;
 }
 
+export interface IMoveAction extends IAction {
+  prevPosition: number;
+  prevListId: string;
+}
+
 export interface IUser {
   firstName: string;
   lastName: string;

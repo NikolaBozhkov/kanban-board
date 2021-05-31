@@ -130,9 +130,11 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
     }
     case Action.UpdateLists: {
       const lists = (action as UpdateListsAction).lists;
-      const listsMap = lists.reduce((res, list) => {
-        return res.set(list.id, list);
-      }, state.listsMap);
+      let listsMap = state.listsMap.clear();
+      lists.forEach(list => {
+        listsMap = listsMap.set(list.id, list);
+      });
+
       return syncFromMaps(listsMap, state.cardsMap);
     }
     case Action.AddList:
@@ -148,7 +150,6 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
     }
     case Action.AddCard: {
       const addedCard = (action as CardAction).card;
-      // const cardsMap = state.cardsMap.set(card.id, card);
 
       let cardsMap = state.cardsMap.reduce((res, card) => {
         if (card.listId == addedCard.listId) {

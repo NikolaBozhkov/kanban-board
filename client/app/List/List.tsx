@@ -41,8 +41,9 @@ export function List({ list, listsCount }: ListProps): JSX.Element {
 
   async function handleClickRemove() {
     try {
-      await listService.delete(list.id);
-      boardStore.removeList(list.id);
+      const updatedLists = await listService.delete(list.id);
+      console.log(updatedLists);
+      boardStore.updateLists(updatedLists);
     } catch (error) {
       console.log(error);
     }

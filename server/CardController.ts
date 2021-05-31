@@ -3,7 +3,7 @@ import { Controller, Delete, Middleware, Post, Put } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
 import { cardsMap, createCard, listsMap } from './data-store';
 import { getCards, getPopulatedLists } from '../shared/data-utils';
-import { ActionType, IEditAction } from '../shared/data-types';
+import { ActionType, ICard, IEditAction, IMoveAction } from '../shared/data-types';
 import { cardByIdMiddlewareFactory, CardRecord, listByIdMiddlewareFactory, ListRecord, targetPositionMiddleware, TargetPositionRecord, titleMiddlewareFactory, TitleRecord } from './common-middleware';
 import { badRequest } from './helpers';
 
@@ -86,7 +86,10 @@ export class CardController {
     const card = res.locals.card;
     cardsMap.delete(card.id);
 
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    const cards = getCards(cardsMap, card.listId);
+    this.pullCardsUp(cards, card.position);
+
+    res.status(StatusCodes.OK).json(getPopulatedLists(listsMap, cardsMap));
   }
 
   @Put('move')
@@ -101,39 +104,25 @@ export class CardController {
     const targetCard = res.locals.card;
 
     const listCards = getCards(cardsMap, listTarget.id);
-    if (targetPosition < 0 || targetPosition >= listCards.length) {
+    if (targetPosition < 0 || targetPosition > listCards.length) {
       return badRequest(res, 'targetPosition is out of bounds');
     }
 
-    // A bit of copy pasting and not really smart solutions here, not a fan of doing things in a rush
-    // Moving to different list
-    if (targetCard.listId != listTarget.id) {
-      listCards.forEach(card => {
-        if (card.position >= targetPosition) {
-          card.position += 1;
-        }
-      });
-    } else {
-      listCards.forEach(card => {
-        // Move each list between the list position and the target position by +/- 1
-        if (targetPosition > targetCard.position) {
-          if (targetCard.position < card.position && card.position <= targetPosition) {
-            card.position -= 1;
-          }
-        } else {
-          if (targetPosition <= card.position && card.position < targetCard.position) {
-            card.position += 1;
-          }
-        }
-      });
-    }
+    const prevListId = targetCard.listId;
+    const prevPosition = targetCard.position;
 
-    targetCard.history.push({
+    this.moveCard(targetCard, listTarget.id, targetPosition);
+
+    const moveAction: IMoveAction = {
       userId: 'current user',
-      description: `Moved from ${listsMap.get(targetCard.listId)?.title}(${targetCard.position}) to ${listTarget.title}(${targetPosition})`,
+      description: `Moved from ${listsMap.get(prevListId)?.title}(${prevPosition}) to ${listTarget.title}(${targetPosition})`,
       type: ActionType.Move,
-      date: new Date()
-    })
+      date: new Date(),
+      prevListId,
+      prevPosition
+    };
+
+    targetCard.history.push(moveAction);
 
     targetCard.listId = listTarget.id;
     targetCard.position = targetPosition;
@@ -152,6 +141,7 @@ export class CardController {
     }
 
     const lastAction = card.history.pop();
+
     if (lastAction?.type == ActionType.Edit) {
       const editAction = lastAction as IEditAction;
 
@@ -162,8 +152,62 @@ export class CardController {
       if (editAction?.prevDescription) {
         card.description = editAction.prevDescription;
       }
+    } else if (lastAction?.type == ActionType.Move) {
+      const moveAction = lastAction as IMoveAction;
+      this.moveCard(card, moveAction.prevListId, moveAction.prevPosition);
     }
 
-    return res.status(StatusCodes.OK).json(card);
+    return res.status(StatusCodes.OK).json(getPopulatedLists(listsMap, cardsMap));
+  }
+
+  private moveCards(cards: ICard[], currentPosition: number, targetPosition: number) {
+    cards.forEach(card => {
+      // Move each list between the list position and the target position by +/- 1
+      if (targetPosition > currentPosition) {
+        if (currentPosition < card.position && card.position <= targetPosition) {
+          card.position -= 1;
+        }
+      } else {
+        if (targetPosition <= card.position && card.position < currentPosition) {
+          card.position += 1;
+        }
+      }
+    });
+  }
+
+  private pullCardsUp(cards: ICard[], thresholdPosition: number) {
+    cards.forEach(card => {
+      if (card.position > thresholdPosition) {
+        card.position -= 1;
+      }
+    });
+  }
+
+  private moveCard(targetCard: ICard, targetListId: string, targetPosition: number): boolean {
+    if (!listsMap.has(targetListId) || !listsMap.has(targetCard.listId)) { return false; }
+
+    const targetListCards = getCards(cardsMap, targetListId);
+    const currentListCards = getCards(cardsMap, targetCard.listId);
+
+    if (targetCard.listId != targetListId) {
+      // Push each card in the target list down
+      targetListCards.forEach(card => {
+        if (card.position >= targetPosition) {
+          card.position += 1;
+        }
+      });
+
+      // Pull each card in the current list up
+      this.pullCardsUp(currentListCards, targetCard.position);
+    } else {
+      this.moveCards(targetListCards, targetCard.position, targetPosition);
+    }
+
+    targetCard.listId = targetListId;
+
+    // If the list changed and the position is out of bounds use the current length (last + 1)
+    targetCard.position = Math.min(targetPosition, targetListCards.length);
+
+    return true;
   }
 }

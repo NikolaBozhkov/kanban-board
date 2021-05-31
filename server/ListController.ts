@@ -37,11 +37,18 @@ export class ListController {
 
   @Delete()
   @Middleware(listByIdMiddlewareFactory('id'))
-  delete(req: Request, res: Response<void, ListRecord>) {
+  delete(req: Request, res: Response<any, ListRecord>) {
     const id = res.locals.list.id;
     listsMap.delete(id);
 
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    listsMap.forEach(list => {
+      if (list.position > res.locals.list.position) {
+        list.position -= 1;
+      }
+    });
+
+    const lists = [...listsMap.values()];
+    return res.status(StatusCodes.OK).json(lists);
   }
 
   @Get()

@@ -79,10 +79,10 @@ export function CardDetails(): JSX.Element {
 
   async function handleUndo() {
     if (!card) { return; }
-    
+
     try {
-      const updatedCard = await cardService.undo(card.id);
-      boardStore.updateCard(updatedCard);
+      const updatedLists = await cardService.undo(card.id);
+      boardStore.setLists(updatedLists);
     } catch (error) {
       console.log(error);
     }

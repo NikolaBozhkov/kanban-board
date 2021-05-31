@@ -4,9 +4,9 @@ import { HttpClient } from "../../http/HttpClient";
 export interface ICardService {
   add(title: string, listId: string): Promise<ICard>;
   update(id: string, fields: { title?: string, description?:string }): Promise<ICard>;
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<IPopulatedList[]>;
   move(id: string, listId: string, targetPosition: number): Promise<IPopulatedList[]>;
-  undo(id: string): Promise<ICard>;
+  undo(id: string): Promise<IPopulatedList[]>;
 }
 
 export class CardService implements ICardService {
@@ -21,15 +21,15 @@ export class CardService implements ICardService {
     return this.http.put('cards', { id, ...fields });
   }
 
-  delete(id: string): Promise<void> {
-    return this.http.voidDelete('cards', { id });
+  delete(id: string): Promise<IPopulatedList[]> {
+    return this.http.delete('cards', { id });
   }
 
   move(id: string, listId: string, targetPosition: number): Promise<IPopulatedList[]> {
     return this.http.put('cards/move', { listId, id, targetPosition });
   }
 
-  undo(id: string): Promise<ICard> {
+  undo(id: string): Promise<IPopulatedList[]> {
     return this.http.put('cards/undo', { id });
   }
 }
