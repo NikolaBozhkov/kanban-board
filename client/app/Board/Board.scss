@@ -4,8 +4,11 @@
 $add-icon-width: 5rem;
 $divider-width: 1px;
 
-.filter-container {
+.filter-container input {
   background-color: lighten($bg-color, 10%);
+  padding: 1rem;
+  margin-left: 2rem;
+  border-radius: 0.4rem;
 }
 
 .lists {
