@@ -1,4 +1,4 @@
-import { ICard, IList, IUser } from '../shared/data-types';
+import { ActionType, ICard, IList, IUser } from '../shared/data-types';
 import { v4 as uuidv4 } from 'uuid';
 import { getCards } from '../shared/data-utils';
 
@@ -45,7 +45,12 @@ for (let i = 0; i < 3; i++) {
     id,
     title: 'Example card ' + i,
     description: 'Description of example card ' + i,
-    history: [],
+    history: [{
+      userId: 'system',
+      description: `System added this card to ${listsMap.get(listId)?.title}`,
+      type: ActionType.Add,
+      date: new Date()
+    }],
     listId,
     position: cards.length
   };

@@ -77,6 +77,17 @@ export function CardDetails(): JSX.Element {
     setIsEditingDescription(false);
   }
 
+  async function handleUndo() {
+    if (!card) { return; }
+    
+    try {
+      const updatedCard = await cardService.undo(card.id);
+      boardStore.updateCard(updatedCard);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const loadCardDetailsFromStore = useCallback(() => {
     const cardDetails = boardStore.getCardAndList(id);
     if (cardDetails) {
@@ -120,8 +131,8 @@ export function CardDetails(): JSX.Element {
                 <textarea { ...cardDescription.domProps } onFocus={handleCardDescriptionFocus} placeholder="Add description..." />
                 {isEditingDescription &&
                   <div>
-                    <span onClick={handleConfirmDescriptionEdit}>OK</span>&nbsp;
-                    <span onClick={handleCancelDescriptionEdit}>Cancel</span>
+                    <span className="btn" onClick={handleConfirmDescriptionEdit}>OK</span>&nbsp;
+                    <span className="btn" onClick={handleCancelDescriptionEdit}>Cancel</span>
                   </div>
                 }
               </div>
@@ -151,6 +162,7 @@ export function CardDetails(): JSX.Element {
                 })}
               </div>
             </div>
+            <span className="undo-btn" onClick={handleUndo}><Icon name="gg-undo" />Undo</span>
           </div>
         </div>
       </div>

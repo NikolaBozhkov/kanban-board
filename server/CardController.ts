@@ -3,7 +3,7 @@ import { Controller, Delete, Middleware, Post, Put } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
 import { cardsMap, createCard, listsMap } from './data-store';
 import { getCards, getPopulatedLists } from '../shared/data-utils';
-import { ActionType } from '../shared/data-types';
+import { ActionType, IEditAction } from '../shared/data-types';
 import { cardByIdMiddlewareFactory, CardRecord, listByIdMiddlewareFactory, ListRecord, targetPositionMiddleware, TargetPositionRecord, titleMiddlewareFactory, TitleRecord } from './common-middleware';
 import { badRequest } from './helpers';
 
@@ -44,12 +44,16 @@ export class CardController {
     const card = res.locals.card;
     let modifiedProps: string[] = [];
 
+    let prevTitle: string | undefined;
     if (res.locals.title !== undefined) {
+      prevTitle = card.title;
       card.title = res.locals.title;
       modifiedProps.push('title');
     }
 
+    let prevDescription: string | undefined;
     if (req.body.description !== undefined) {
+      prevDescription = card.description;
       card.description = (req.body.description as string).trim();
       modifiedProps.push('description');
     }
@@ -62,12 +66,16 @@ export class CardController {
       modifiedPropsJoined = modifiedProps[0];
     }
 
-    card.history.push({
+    const action: IEditAction = {
       userId: 'current user',
-      description: `User modified ${modifiedPropsJoined}`,
+      description: `Modified ${modifiedPropsJoined}`,
       type: ActionType.Edit,
-      date: new Date()
-    });
+      date: new Date(),
+      prevTitle,
+      prevDescription
+    };
+
+    card.history.push(action);
 
     return res.status(StatusCodes.OK).json(card);
   }
@@ -120,9 +128,42 @@ export class CardController {
       });
     }
 
+    targetCard.history.push({
+      userId: 'current user',
+      description: `Moved from ${listsMap.get(targetCard.listId)?.title}(${targetCard.position}) to ${listTarget.title}(${targetPosition})`,
+      type: ActionType.Move,
+      date: new Date()
+    })
+
     targetCard.listId = listTarget.id;
     targetCard.position = targetPosition;
 
     return res.status(StatusCodes.OK).json(getPopulatedLists(listsMap, cardsMap));
+  }
+
+  @Put('undo') 
+  @Middleware(cardByIdMiddlewareFactory('id'))
+  undo(req: Request, res: Response<any, CardRecord>) {
+    const card = res.locals.card;
+
+    // Can't undo creation
+    if (card.history.length <= 1) {
+      return res.status(StatusCodes.NOT_MODIFIED).json(card);
+    }
+
+    const lastAction = card.history.pop();
+    if (lastAction?.type == ActionType.Edit) {
+      const editAction = lastAction as IEditAction;
+
+      if (editAction?.prevTitle) {
+        card.title = editAction.prevTitle;
+      }
+
+      if (editAction?.prevDescription) {
+        card.description = editAction.prevDescription;
+      }
+    }
+
+    return res.status(StatusCodes.OK).json(card);
   }
 }

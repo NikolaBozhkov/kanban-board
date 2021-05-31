@@ -6,6 +6,7 @@ export interface ICardService {
   update(id: string, fields: { title?: string, description?:string }): Promise<ICard>;
   delete(id: string): Promise<void>;
   move(id: string, listId: string, targetPosition: number): Promise<IPopulatedList[]>;
+  undo(id: string): Promise<ICard>;
 }
 
 export class CardService implements ICardService {
@@ -26,5 +27,9 @@ export class CardService implements ICardService {
 
   move(id: string, listId: string, targetPosition: number): Promise<IPopulatedList[]> {
     return this.http.put('cards/move', { listId, id, targetPosition });
+  }
+
+  undo(id: string): Promise<ICard> {
+    return this.http.put('cards/undo', { id });
   }
 }

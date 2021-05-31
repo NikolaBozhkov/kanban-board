@@ -30,6 +30,11 @@ export interface IAction {
   date: Date;
 }
 
+export interface IEditAction extends IAction {
+  prevTitle?: string;
+  prevDescription?: string;
+}
+
 export interface IUser {
   firstName: string;
   lastName: string;
