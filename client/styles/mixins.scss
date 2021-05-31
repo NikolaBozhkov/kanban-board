@@ -54,10 +54,10 @@
   overflow: hidden;
   position: absolute;
   display: none;
+  flex-direction: column;
 
   &.is-active {
     display: flex;
-    flex-direction: column;
   }
 }
 

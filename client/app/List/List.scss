@@ -44,7 +44,7 @@
     }
   }
 
-  .list-options-container, div[class*="action-container"] {
+  .list-options-container, .info-wrapper > div[class*="action-container"] {
     right: 0;
     top: 100%;
   }
@@ -67,6 +67,7 @@
     @include popup-container(0.5rem);
     z-index: 2;
     padding: 1.5rem 2rem;
+    align-items: center;
 
     .action-title {
       font-size: 2rem;

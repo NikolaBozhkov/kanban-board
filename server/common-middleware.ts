@@ -56,6 +56,23 @@ export function cardByIdMiddlewareFactory(bodyKey: 'id' | 'cardId') {
   return [mapRecordMiddleware, cardRecordMiddleware];
 }
 
+export type TargetPositionRecord = Record<string, any> & Record<'targetPosition', number>;
+
+export function targetPositionMiddleware(req: Request, res: Response<any, TargetPositionRecord>, next: NextFunction) {
+  if (req.body.targetPosition === undefined) {
+    return badRequest(res, 'targetPosition is required');
+  }
+
+  const targetPosition = +req.body.targetPosition;
+  if (isNaN(targetPosition)) {
+    return badRequest(res, 'targetPosition must be a number');
+  }
+
+  res.locals.targetPosition = targetPosition;
+
+  next();
+}
+
 type MapRecord = Record<string, any> & Record<'record', any>;
 
 function mapRecordMiddlewareFactory(bodyKey: string, map: Map<string, unknown>) {

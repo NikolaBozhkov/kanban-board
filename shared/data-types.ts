@@ -4,6 +4,7 @@ export interface ICard {
   history: IAction[];
   id: string;
   listId: string;
+  position: number;
 }
 
 export interface IList {

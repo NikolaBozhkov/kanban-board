@@ -59,11 +59,22 @@
     }
   }
 
-  .options-container {
-    @include options-container($border-r);
+  .options-container, & > div[class*="action-container"] {
     $margin-left: 1rem;
     left: calc(100% + #{$margin-left});
     top: 0;
+
+    & > * {
+      white-space: nowrap;
+    }
+
+    .select-container:not(:last-of-type) {
+      margin-bottom: 0.7rem;
+    }
+  }
+
+  .options-container {
+    @include options-container($border-r);
 
     .options-highlight {
       display: block;

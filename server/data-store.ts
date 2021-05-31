@@ -1,17 +1,19 @@
 import { ICard, IList, IUser } from '../shared/data-types';
 import { v4 as uuidv4 } from 'uuid';
+import { getCards } from '../shared/data-utils';
 
 export let cardsMap = new Map<string, ICard>();
 export let listsMap = new Map<string, IList>();
 export let usersMap = new Map<string, IUser>();
 
-export function createCard(title: string, listId: string): ICard {
+export function createCard(title: string, listId: string, position: number): ICard {
   return {
     id: uuidv4(),
     title,
     description: '',
     history: [],
-    listId
+    listId,
+    position
   }
 }
 
@@ -38,12 +40,14 @@ for (let i = 0; i < 3; i++) {
     listId = [...listsMap.keys()][1];
   }
 
+  const cards = getCards(cardsMap, listId);
   const card: ICard = { 
     id,
     title: 'Example card ' + i,
     description: 'Description of example card ' + i,
     history: [],
-    listId
+    listId,
+    position: cards.length
   };
   cardsMap.set(id, card);
 }

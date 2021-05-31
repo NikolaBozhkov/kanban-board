@@ -15,3 +15,7 @@ export function getPopulatedLists(
 
   return populatedLists;
 }
+
+export function getCards(cardsMap: Map<string, ICard> | Immutable.Map<string, ICard>, listId: string): ICard[] {
+  return Array.from(cardsMap.values()).filter(card => card.listId == listId);
+}

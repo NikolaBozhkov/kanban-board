@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useRef, useState } from "react";
 
 export function useOutsideClickHandler(handler: () => void, ref: MutableRefObject<HTMLElement | null>): void {
   useEffect(() => {
@@ -13,7 +13,14 @@ export function useOutsideClickHandler(handler: () => void, ref: MutableRefObjec
   }, [ref, handler]);
 }
 
-export function useHiddenContainer<ContainerType extends HTMLElement, ButtonType extends HTMLElement>() {
+type HiddenContainer<ContainerType extends HTMLElement, ButtonType extends HTMLElement> = {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  containerRef: MutableRefObject<ContainerType | null>;
+  btnRef: MutableRefObject<ButtonType | null>;
+};
+
+export function useHiddenContainer<ContainerType extends HTMLElement, ButtonType extends HTMLElement>(): HiddenContainer<ContainerType, ButtonType> {
   const containerRef = useRef<ContainerType>(null);
   const btnRef = useRef<ButtonType>(null);
   const [isOpen, setIsOpen] = useState(false);

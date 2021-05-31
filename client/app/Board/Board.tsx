@@ -13,12 +13,12 @@ export function Board(): JSX.Element {
   const [listComponents, setListComponents] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
-    const unsubscribeLists = boardStore.subscribeToLists(lists => {
+    const unsubscribeLists = boardStore.subscribeToPopulatedLists(lists => {
       console.log(lists);
       setListComponents(lists.map((list) => <List list={list} listsCount={lists.length} key={list.id} />));
     });
 
-    return () => { unsubscribeLists() };
+    return () => unsubscribeLists();
   }, [boardStore]);
 
   function handleKeyDown(event: React.KeyboardEvent) {

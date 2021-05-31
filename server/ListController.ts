@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { listsMap, cardsMap } from './data-store';
 import { getPopulatedLists } from '../shared/data-utils';
 import { IList } from '../shared/data-types';
-import { TitleRecord, titleMiddlewareFactory, ListRecord, listByIdMiddlewareFactory } from './common-middleware';
+import { TitleRecord, titleMiddlewareFactory, ListRecord, listByIdMiddlewareFactory, TargetPositionRecord, targetPositionMiddleware } from './common-middleware';
 import { badRequest } from './helpers';
 
 @Controller('api/lists')
@@ -56,17 +56,12 @@ export class ListController {
   }
 
   @Put('move')
-  @Middleware(listByIdMiddlewareFactory('id'))
-  move(req: Request, res: Response<any, ListRecord>) {
-    if (req.body.targetPosition === undefined) {
-      return badRequest(res, 'targetPosition is required');
-    }
-
-    const targetPosition = +req.body.targetPosition;
-    if (isNaN(targetPosition)) {
-      return badRequest(res, 'targetPosition must be a number');
-    }
-
+  @Middleware([
+    targetPositionMiddleware,
+    ...listByIdMiddlewareFactory('id')
+  ])
+  move(req: Request, res: Response<any, ListRecord & TargetPositionRecord>) {
+    const targetPosition = res.locals.targetPosition;
     if (targetPosition < 0 || targetPosition >= listsMap.size) {
       return badRequest(res, 'targetPosition is out of bounds');
     }

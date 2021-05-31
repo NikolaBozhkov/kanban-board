@@ -1,7 +1,7 @@
 import { Action as ReduxAction, createStore, Unsubscribe } from 'redux';
 import { Map } from 'immutable';
 import { IPopulatedList, IList, ICard } from '../../../shared/data-types';
-import { getPopulatedLists } from '../../../shared/data-utils';
+import { getCards, getPopulatedLists } from '../../../shared/data-utils';
 
 enum Action {
   SetLists,
@@ -97,6 +97,7 @@ const defaultState = {
 function boardReducer(state: BoardState = defaultState, action: ReduxAction<Action>): BoardState {
   function syncFromMaps(listsMap: Map<string, IList>, cardsMap: Map<string, ICard>): BoardState {
     const lists = getPopulatedLists(listsMap, cardsMap).sort((a, b) => a.position - b.position);
+    lists.forEach(list => list.cards.sort((a, b) => a.position - b.position));
     return {
       listsMap,
       cardsMap,
@@ -117,6 +118,7 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
     });
 
     const sortedLists = lists.sort((a, b) => a.position - b.position);
+    sortedLists.forEach(list => list.cards.sort((a, b) => a.position - b.position));
 
     return { ...maps, lists: sortedLists };
   }
@@ -144,7 +146,22 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
       const listsMap = state.listsMap.delete(id);
       return syncFromMaps(listsMap, state.cardsMap);
     }
-    case Action.AddCard:
+    case Action.AddCard: {
+      const addedCard = (action as CardAction).card;
+      // const cardsMap = state.cardsMap.set(card.id, card);
+
+      let cardsMap = state.cardsMap.reduce((res, card) => {
+        if (card.listId == addedCard.listId) {
+          card.position += 1;
+        }
+
+        return res;
+      }, state.cardsMap);
+
+      cardsMap = cardsMap.set(addedCard.id, addedCard);
+
+      return syncFromMaps(state.listsMap, cardsMap);
+    }
     case Action.UpdateCard: {
       const card = (action as CardAction).card;
       const cardsMap = state.cardsMap.set(card.id, card);
@@ -163,18 +180,28 @@ function boardReducer(state: BoardState = defaultState, action: ReduxAction<Acti
 const store = createStore(boardReducer, defaultState);
 
 export class BoardStore {
-  subscribeToLists(callback: (lists: IPopulatedList[]) => void): Unsubscribe {
+  subscribeToPopulatedLists(callback: (lists: IPopulatedList[]) => void): Unsubscribe {
     return store.subscribe(() => {
-      callback(store.getState().lists);
+      callback(this.getPopulatedLists());
     });
   }
 
-  getLists(): IPopulatedList[] {
+  subscribeToLists(callback: (lists: IList[]) => void): Unsubscribe {
+    return store.subscribe(() => {
+      callback(this.getLists());
+    });
+  }
+
+  getPopulatedLists(): IPopulatedList[] {
     return store.getState().lists;
   }
 
+  getLists(): IList[] {
+    return Array.from(store.getState().listsMap.values());
+  }
+
   getCardAndList(cardId: string): { card: ICard, list: IList } | undefined {
-    const cardsWithList = this.getLists().reduce((res, list) => {
+    const cardsWithList = this.getPopulatedLists().reduce((res, list) => {
       const current = list.cards.map(card => { 
         return { card, list: list as IList };
       });
